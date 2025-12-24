@@ -33,8 +33,8 @@ export default function AdminPage() {
   }
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Theme Admin</h1>
+    <section>
+      <h2>Theme Editor</h2>
       <p>فایل theme.json را ادیت کن (بدون دیتابیس، مستقیم روی فایل).</p>
       <textarea
         style={{ width: "100%", height: "400px", fontFamily: "monospace" }}
@@ -45,6 +45,6 @@ export default function AdminPage() {
         <button onClick={handleSave}>ذخیره</button>
         {status && <p>{status}</p>}
       </div>
-    </main>
+    </section>
   );
 }
