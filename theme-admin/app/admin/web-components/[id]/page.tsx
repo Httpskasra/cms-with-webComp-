@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { use, useEffect, useMemo, useState } from "react";
@@ -252,8 +253,8 @@ export default function WebComponentEditor({
     listSetter(copy);
   }
 
-  function addRow(listSetter: (items: KeyValue[]) => void) {
-    listSetter((prev) => [...prev, { key: "", value: "" }]);
+  function addRow(listSetter: (items: KeyValue[]) => void, list: KeyValue[]) {
+    listSetter([...list, { key: "", value: "" }]);
   }
 
   if (!isDev) {
@@ -340,7 +341,7 @@ export default function WebComponentEditor({
                     />
                   </div>
                 ))}
-                <button onClick={() => addRow(setCssVars)}>+ متغیر جدید</button>
+                <button onClick={() => addRow(setCssVars, cssVars)}>+ متغیر جدید</button>
               </div>
             </div>
 
@@ -370,7 +371,7 @@ export default function WebComponentEditor({
                     />
                   </div>
                 ))}
-                <button onClick={() => addRow(setTokens)}>+ توکن جدید</button>
+                <button onClick={() => addRow(setTokens, tokens)}>+ توکن جدید</button>
               </div>
             </div>
 

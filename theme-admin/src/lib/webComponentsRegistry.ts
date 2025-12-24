@@ -12,6 +12,8 @@ const REGISTRY_URL =
   "http://localhost:4000/registry/web-components.json";
 
 export async function fetchRegistryComponents(): Promise<WebComponentRecord[]> {
+  console.log("📥 Fetching from:", REGISTRY_URL);
+
   const response = await fetch(REGISTRY_URL, {
     cache: "no-store",
     headers: {
@@ -26,14 +28,19 @@ export async function fetchRegistryComponents(): Promise<WebComponentRecord[]> {
   }
 
   const payload = await response.json();
+  console.log("📦 Raw payload:", JSON.stringify(payload, null, 2));
+
   const list: unknown = Array.isArray(payload)
     ? payload
     : (payload as { components?: unknown }).components;
 
   if (!Array.isArray(list)) {
-    throw new Error("Registry response does not contain a components array");
+    throw new Error(
+      `Registry response does not contain a components array. Got: ${typeof list}`
+    );
   }
 
+  console.log("✅ Found", list.length, "components");
   return list.map((item) => normalizeComponentEntry(item));
 }
 

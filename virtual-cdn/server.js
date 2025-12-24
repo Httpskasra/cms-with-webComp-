@@ -121,6 +121,18 @@ app.get("/cdn/*", async (req, res) => {
   }
 });
 
+// روت Registry: لیست تمام web components
+app.get("/registry/web-components.json", (req, res) => {
+  res.json([
+    {
+      name: "cti-footer",
+      version: "1.0.0",
+      cachedVersion: "1.0.0",
+      docs: "بخش footer",
+    },
+  ]);
+});
+
 // روت جدید: Admin بعد از تغییر theme.json این را صدا می‌زند
 // بدنهٔ درخواست: { "filePath": "api/theme.json" }
 app.post("/refresh-cache", async (req, res) => {

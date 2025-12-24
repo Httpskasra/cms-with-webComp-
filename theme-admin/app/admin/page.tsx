@@ -1,7 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import Link from "next/link";
+import { Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 
 type NoticeType = "info" | "success" | "error";
 
@@ -19,33 +21,6 @@ interface PublishJob {
   requestedBy: string;
 }
 
-export default function AdminPage() {
-  const [jsonText, setJsonText] = useState("");
-  const [status, setStatus] = useState<string | null>(
-    () =>
-      process.env.NODE_ENV === "development"
-        ? null
-        : "این صفحه فقط در حالت توسعه فعال است."
-  );
-  const [notice, setNotice] = useState<Notice | null>(null);
-  const [job, setJob] = useState<PublishJob | null>(null);
-  const isDev = process.env.NODE_ENV === "development";
-  const adminUser = "local-dev";
-
-  const applyJobUpdate = useCallback((nextJob: PublishJob) => {
-    setJob(nextJob);
-    if (nextJob.status === "completed") {
-      setNotice({ type: "success", text: "انتشار با موفقیت انجام شد" });
-    }
-    if (nextJob.status === "failed") {
-      setNotice({ type: "error", text: nextJob.error || "انتشار شکست خورد" });
-    }
-  }, []);
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
-import { Suspense, useEffect, useMemo, useState } from "react";
-
 type ComponentConfig = {
   base?: Record<string, unknown>;
   variants?: Record<string, unknown>;
@@ -60,6 +35,7 @@ type ParsedTheme = {
 };
 
 const isDev = process.env.NODE_ENV === "development";
+const adminUser = "local-dev";
 
 const DocsTab = isDev
   ? dynamic<{ content: string }>(() => import("./DocsTab"), {
@@ -71,9 +47,21 @@ const DocsTab = isDev
 export default function AdminPage() {
   const [jsonText, setJsonText] = useState("");
   const [status, setStatus] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
+  const [job, setJob] = useState<PublishJob | null>(null);
   const [activeTabs, setActiveTabs] = useState<
     Record<string, "config" | "docs">
   >({});
+
+  const applyJobUpdate = useCallback((nextJob: PublishJob) => {
+    setJob(nextJob);
+    if (nextJob.status === "completed") {
+      setNotice({ type: "success", text: "انتشار با موفقیت انجام شد" });
+    }
+    if (nextJob.status === "failed") {
+      setNotice({ type: "error", text: nextJob.error || "انتشار شکست خورد" });
+    }
+  }, []);
 
   useEffect(() => {
     if (!isDev) return;
@@ -107,7 +95,10 @@ export default function AdminPage() {
 
   const { parsedTheme, parseError } = useMemo(() => {
     try {
-      return { parsedTheme: JSON.parse(jsonText) as ParsedTheme, parseError: null };
+      return {
+        parsedTheme: JSON.parse(jsonText) as ParsedTheme,
+        parseError: null,
+      };
     } catch (error: any) {
       return {
         parsedTheme: null,
@@ -183,154 +174,150 @@ export default function AdminPage() {
   }
 
   return (
-    <section>
-      <h2>Theme Editor</h2>
-      <p>فایل theme.json را ادیت کن (بدون دیتابیس، مستقیم روی فایل).</p>
-      {notice && (
-        <div
-          style={{
-            background: notice.type === "error" ? "#fdecea" : "#e8f4fd",
-            color: "#111",
-            padding: "8px 12px",
-            marginBottom: 12,
-            borderRadius: 4,
-            border:
-              notice.type === "error" ? "1px solid #f5c2c7" : "1px solid #b6d4fe",
-          }}
-        >
-          {notice.text}
-        </div>
+    // <section>
+    //   <h2>Theme Editor</h2>
+    //   <p>فایل theme.json را ادیت کن (بدون دیتابیس، مستقیم روی فایل).</p>
+    //   {notice && (
+    //     <div
+    //       style={{
+    //         background: notice.type === "error" ? "#fdecea" : "#e8f4fd",
+    //         color: "#111",
+    //         padding: "8px 12px",
+    //         marginBottom: 12,
+    //         borderRadius: 4,
+    //         border:
+    //           notice.type === "error" ? "1px solid #f5c2c7" : "1px solid #b6d4fe",
+    //       }}
+    //     >
+    //       {notice.text}
+    //     </div>
+    //   )}
+    //   <div style={{ margin: "12px 0", padding: 12, border: "1px solid #e5e7eb" }}>
+    //     <p style={{ marginTop: 0 }}>Sandbox جدید برای ویرایش وب‌کامپوننت:</p>
+    //     <Link href="/admin/web-components/cti-footer">/admin/web-components/cti-footer</Link>
+    //   </div>
+    //   <textarea
+    //     style={{ width: "100%", height: "400px", fontFamily: "monospace" }}
+    //     value={jsonText}
+    //     onChange={(e) => setJsonText(e.target.value)}
+    //   />
+    //   <div style={{ marginTop: 12 }}>
+    //     <button onClick={handleSave}>ذخیره</button>
+    //     <button onClick={handlePublish} style={{ marginLeft: 8 }}>
+    //       Publish & Purge
+    //     </button>
+    //     {status && <p>{status}</p>}
+    //     {job && (
+    //       <div style={{ marginTop: 8 }}>
+    //         <strong>وضعیت job:</strong> {job.status}
+    //         {job.message && <span style={{ marginLeft: 6 }}>({job.message})</span>}
+    //         {job.error && (
+    //           <p style={{ color: "#a00", marginTop: 4 }}>خطا: {job.error}</p>
+    //         )}
+    //       </div>
+    //     )}
+    //     {parseError && (
+    //       <p style={{ color: "#b91c1c" }}>JSON نامعتبر: {parseError}</p>
+    //     )}
+    //   </div>
+    // </section>
+    <section style={{ marginTop: 24 }}>
+      <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+        <h2 style={{ margin: 0 }}>جزئیات کامپوننت‌ها</h2>
+        {!isDev && (
+          <span style={{ fontSize: 12, color: "#6b7280" }}>
+            (Docs فقط در حالت dev بارگذاری می‌شود تا در باندل prod نباشد)
+          </span>
+        )}
+      </div>
+      {componentEntries.length === 0 && (
+        <p style={{ marginTop: 8 }}>
+          کامپوننتی برای نمایش پیدا نشد یا JSON هنوز معتبر نیست.
+        </p>
       )}
-      <div style={{ margin: "12px 0", padding: 12, border: "1px solid #e5e7eb" }}>
-        <p style={{ marginTop: 0 }}>Sandbox جدید برای ویرایش وب‌کامپوننت:</p>
-        <Link href="/admin/web-components/cti-footer">/admin/web-components/cti-footer</Link>
-      </div>
-      <textarea
-        style={{ width: "100%", height: "400px", fontFamily: "monospace" }}
-        value={jsonText}
-        onChange={(e) => setJsonText(e.target.value)}
-      />
-      <div style={{ marginTop: 12 }}>
-        <button onClick={handleSave}>ذخیره</button>
-        <button onClick={handlePublish} style={{ marginLeft: 8 }}>
-          Publish & Purge
-        </button>
-        {status && <p>{status}</p>}
-        {job && (
-          <div style={{ marginTop: 8 }}>
-            <strong>وضعیت job:</strong> {job.status}
-            {job.message && <span style={{ marginLeft: 6 }}>({job.message})</span>}
-            {job.error && (
-              <p style={{ color: "#a00", marginTop: 4 }}>خطا: {job.error}</p>
-            )}
-          </div>
-        {parseError && (
-          <p style={{ color: "#b91c1c" }}>JSON نامعتبر: {parseError}</p>
-        )}
-      </div>
-    </section>
-      <section style={{ marginTop: 24 }}>
-        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-          <h2 style={{ margin: 0 }}>جزئیات کامپوننت‌ها</h2>
-          {!isDev && (
-            <span style={{ fontSize: 12, color: "#6b7280" }}>
-              (Docs فقط در حالت dev بارگذاری می‌شود تا در باندل prod نباشد)
-            </span>
-          )}
-        </div>
-        {componentEntries.length === 0 && (
-          <p style={{ marginTop: 8 }}>
-            کامپوننتی برای نمایش پیدا نشد یا JSON هنوز معتبر نیست.
-          </p>
-        )}
-        {componentEntries.map(([name, config]) => {
-          const selectedTab = activeTabs[name] ?? "config";
-          const docsContent =
-            typeof config.docs === "string"
-              ? config.docs
-              : config.docs
-              ? JSON.stringify(config.docs, null, 2)
-              : typeof config.notes === "string"
-              ? config.notes
-              : config.notes
-              ? JSON.stringify(config.notes, null, 2)
-              : "";
-          const hasDocs = Boolean(docsContent);
+      {componentEntries.map(([name, config]) => {
+        const selectedTab = activeTabs[name] ?? "config";
+        const docsContent =
+          typeof config.docs === "string"
+            ? config.docs
+            : config.docs
+            ? JSON.stringify(config.docs, null, 2)
+            : typeof config.notes === "string"
+            ? config.notes
+            : config.notes
+            ? JSON.stringify(config.notes, null, 2)
+            : "";
+        const hasDocs = Boolean(docsContent);
 
-          return (
-            <article
-              key={name}
+        return (
+          <article
+            key={name}
+            style={{
+              marginTop: 12,
+              border: "1px solid #e5e7eb",
+              borderRadius: 8,
+              padding: 12,
+            }}>
+            <header
               style={{
-                marginTop: 12,
-                border: "1px solid #e5e7eb",
-                borderRadius: 8,
-                padding: 12,
-              }}
-            >
-              <header
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  gap: 12,
-                  flexWrap: "wrap",
-                }}
-              >
-                <strong>{name}</strong>
-                <div style={{ display: "flex", gap: 8 }}>
-                  <button
-                    onClick={() => handleTabChange(name, "config")}
-                    disabled={selectedTab === "config"}
-                  >
-                    تنظیمات
-                  </button>
-                  <button
-                    onClick={() => handleTabChange(name, "docs")}
-                    disabled={selectedTab === "docs"}
-                  >
-                    Docs
-                  </button>
-                </div>
-              </header>
-
-              <div style={{ marginTop: 8 }}>
-                {selectedTab === "config" && (
-                  <pre
-                    style={{
-                      background: "#f8fafc",
-                      padding: 12,
-                      borderRadius: 6,
-                      overflow: "auto",
-                      margin: 0,
-                    }}
-                  >
-                    {JSON.stringify(config, null, 2)}
-                  </pre>
-                )}
-
-                {selectedTab === "docs" && (
-                  <div>
-                    {hasDocs ? (
-                      isDev && DocsTab ? (
-                        <Suspense fallback={<p>در حال بارگذاری مستندات...</p>}>
-                          <DocsTab content={docsContent} />
-                        </Suspense>
-                      ) : (
-                        <p>
-                          Docs فقط در حالت توسعه بارگذاری می‌شود تا از bundle
-                          production خارج بماند.
-                        </p>
-                      )
-                    ) : (
-                      <p>برای این کامپوننت توضیح مستنداتی ثبت نشده است.</p>
-                    )}
-                  </div>
-                )}
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                gap: 12,
+                flexWrap: "wrap",
+              }}>
+              <strong>{name}</strong>
+              <div style={{ display: "flex", gap: 8 }}>
+                <button
+                  onClick={() => handleTabChange(name, "config")}
+                  disabled={selectedTab === "config"}>
+                  تنظیمات
+                </button>
+                <button
+                  onClick={() => handleTabChange(name, "docs")}
+                  disabled={selectedTab === "docs"}>
+                  Docs
+                </button>
               </div>
-            </article>
-          );
-        })}
-      </section>
-    </main>
+            </header>
+
+            <div style={{ marginTop: 8 }}>
+              {selectedTab === "config" && (
+                <pre
+                  style={{
+                    background: "#f8fafc",
+                    padding: 12,
+                    borderRadius: 6,
+                    overflow: "auto",
+                    margin: 0,
+                  }}>
+                  {JSON.stringify(config, null, 2)}
+                </pre>
+              )}
+
+              {selectedTab === "docs" && (
+                <div>
+                  {hasDocs ? (
+                    isDev && DocsTab ? (
+                      <Suspense fallback={<p>در حال بارگذاری مستندات...</p>}>
+                        <DocsTab content={docsContent} />
+                      </Suspense>
+                    ) : (
+                      <p>
+                        Docs فقط در حالت توسعه بارگذاری می‌شود تا از bundle
+                        production خارج بماند.
+                      </p>
+                    )
+                  ) : (
+                    <p>برای این کامپوننت توضیح مستنداتی ثبت نشده است.</p>
+                  )}
+                </div>
+              )}
+            </div>
+          </article>
+        );
+      })}
+    </section>
+    // </main>
   );
 }
