@@ -79,8 +79,8 @@ export default function AdminPage() {
   }
 
   return (
-    <main style={{ padding: 24 }}>
-      <h1>Theme Admin</h1>
+    <section>
+      <h2>Theme Editor</h2>
       <p>فایل theme.json را ادیت کن (بدون دیتابیس، مستقیم روی فایل).</p>
       <textarea
         style={{ width: "100%", height: "400px", fontFamily: "monospace" }}
@@ -94,7 +94,7 @@ export default function AdminPage() {
           <p style={{ color: "#b91c1c" }}>JSON نامعتبر: {parseError}</p>
         )}
       </div>
-
+    </section>
       <section style={{ marginTop: 24 }}>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
           <h2 style={{ margin: 0 }}>جزئیات کامپوننت‌ها</h2>
