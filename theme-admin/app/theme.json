@@ -26,7 +26,8 @@
         "fontSize": "160px",
         "color": "#111827",
         "lineHeight": "1.5"
-      }
+      },
+      "docs": "## Text component\nاین کامپوننت برای رندر متن پایه است و می‌تواند در هدرها یا بدنه استفاده شود."
     },
     "Footer": {
       "props": {
@@ -53,7 +54,8 @@
             "href": "/google"
           }
         ]
-      }
+      },
+      "docs": "### Footer Web Component\n- `mode`: تعیین می‌کند Footer در حالت modal/hover/dropdown باشد.\n- `buttonText`, `modalTitle`, `modalBody`: کنترل محتوای متن ها.\n- `dropdownItems`: لینک‌های فوتر."
     },
     "Button": {
       "base": {
@@ -71,7 +73,8 @@
           "backgroundColor": "#f97316",
           "color": "#111827"
         }
-      }
+      },
+      "notes": "کلاس های پایه از theme.tokens استفاده می‌کنند؛ برای تغییر رنگ، از variants استفاده کن."
     },
     "Header": {
       "base": {
@@ -81,6 +84,26 @@
     },
     "Header1": {
       "className": "text-xl text-primary-100 p-10  mx-10 border rounded-lg bg-red-700 shadow-lg shadow-cyan-500/50 "
+    }
+  },
+  "webComponentsStyles": {
+    "cti-footer": {
+      "cssVariables": {
+        "--cta-bg": "#4f46e5",
+        "--cta-color": "#ffffff",
+        "--surface": "#f9fafb"
+      },
+      "tokens": {
+        "primary.color": "#4f46e5",
+        "text.muted": "#4b5563"
+      },
+      "variant": "primary",
+      "size": "md",
+      "states": {
+        "hover": false,
+        "focus": false,
+        "disabled": false
+      }
     }
   }
 }
