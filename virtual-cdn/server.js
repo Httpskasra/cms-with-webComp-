@@ -14,12 +14,22 @@ const CACHE_DIR = path.join(process.cwd(), "cache");
 
 // برای خواندن body JSON
 app.use(express.json());
+
 // ✅ CORS for module scripts
 app.use("/wc", (req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*"); // یا دقیق‌تر: "http://localhost:3000"
   res.setHeader("Access-Control-Allow-Methods", "GET, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+  if (req.method === "OPTIONS") return res.sendStatus(204);
+  next();
+});
+
+// ✅ CORS for manifests and theme files
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
   if (req.method === "OPTIONS") return res.sendStatus(204);
   next();
 });
@@ -33,6 +43,7 @@ app.use(
     },
   })
 );
+
 // ساخت پوشه cache اگر وجود ندارد
 async function ensureCache() {
   try {
@@ -70,10 +81,19 @@ const getContentType = (filePath) => {
   if (filePath.endsWith(".js")) return "application/javascript";
   return "application/octet-stream";
 };
+
 function getCacheControl(filePath) {
   // ✅ فایل‌های config که تغییر می‌کنند
-  if (filePath.endsWith("theme.json") || filePath.endsWith("latest.json")) {
-    return "no-cache";
+  if (
+    filePath.endsWith("theme.json") ||
+    filePath.endsWith("latest.json") ||
+    filePath.endsWith("manifest.json")
+  ) {
+    return "no-cache, must-revalidate";
+  }
+  // ✅ فایل‌های versioned (با hash/version ID) → immutable
+  if (filePath.includes("_v") || filePath.includes("_")) {
+    return "public, max-age=31536000, immutable";
   }
   // ✅ فایل‌های ثابت مثل js/css
   if (filePath.endsWith(".js") || filePath.endsWith(".css")) {
@@ -81,6 +101,7 @@ function getCacheControl(filePath) {
   }
   return "public, max-age=3600";
 }
+
 // روت اصلی CDN: همیشه اول از cache می‌خواند
 app.get("/cdn/*", async (req, res) => {
   const filePath = req.params[0]; // مثلا "api/theme.json" یا "file.css"
@@ -121,6 +142,50 @@ app.get("/cdn/*", async (req, res) => {
   }
 });
 
+// ✅ Manifest endpoints (public and admin)
+app.get("/manifest/public", async (req, res) => {
+  const manifestPath = path.join(CACHE_DIR, "manifest.public.json");
+  try {
+    const content = await fs.readFile(manifestPath, "utf-8");
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-cache, must-revalidate");
+    res.send(content);
+  } catch (err) {
+    console.error("❌ Manifest not found:", err.message);
+    res.status(404).json({ error: "Manifest not found" });
+  }
+});
+
+app.get("/manifest/admin", async (req, res) => {
+  const manifestPath = path.join(CACHE_DIR, "manifest.admin.json");
+  try {
+    const content = await fs.readFile(manifestPath, "utf-8");
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-cache, must-revalidate");
+    res.send(content);
+  } catch (err) {
+    console.error("❌ Admin manifest not found:", err.message);
+    res.status(404).json({ error: "Admin manifest not found" });
+  }
+});
+
+// ✅ Versioned theme endpoint - serve theme files with hash
+app.get("/api/theme/:env/:filename", async (req, res) => {
+  const { env, filename } = req.params;
+  const themePath = path.join(CACHE_DIR, filename);
+
+  try {
+    const content = await fs.readFile(themePath, "utf-8");
+    res.setHeader("Content-Type", "text/css; charset=utf-8");
+    res.setHeader("Cache-Control", getCacheControl(filename));
+    res.send(content);
+    console.log(`✅ Served theme: ${filename}`);
+  } catch (err) {
+    console.error(`❌ Theme file not found: ${filename}`, err.message);
+    res.status(404).json({ error: "Theme file not found" });
+  }
+});
+
 // روت جدید: Admin بعد از تغییر theme.json این را صدا می‌زند
 // بدنهٔ درخواست: { "filePath": "api/theme.json" }
 app.post("/refresh-cache", async (req, res) => {
@@ -143,9 +208,60 @@ app.post("/refresh-cache", async (req, res) => {
   }
 });
 
+// ✅ Cache invalidation endpoint (for admin)
+app.post("/invalidate-cache", async (req, res) => {
+  const { patterns } = req.body || {};
+
+  if (!patterns || !Array.isArray(patterns)) {
+    return res
+      .status(400)
+      .json({ ok: false, error: "patterns array required" });
+  }
+
+  try {
+    await ensureCache();
+    const files = await fs.readdir(CACHE_DIR);
+    let deletedCount = 0;
+
+    for (const file of files) {
+      for (const pattern of patterns) {
+        const regex = new RegExp(pattern);
+        if (regex.test(file)) {
+          await fs.unlink(path.join(CACHE_DIR, file));
+          deletedCount++;
+          console.log(`🗑️ Invalidated: ${file}`);
+        }
+      }
+    }
+
+    return res.json({
+      ok: true,
+      message: `Invalidated ${deletedCount} cache files`,
+      deletedCount,
+    });
+  } catch (err) {
+    console.error("❌ Cache invalidation error:", err.message);
+    return res
+      .status(500)
+      .json({
+        ok: false,
+        error: "Cannot invalidate cache",
+        details: err.message,
+      });
+  }
+});
+
+// ✅ Health check
+app.get("/health", (req, res) => {
+  res.json({
+    ok: true,
+    uptime: process.uptime(),
+    timestamp: new Date().toISOString(),
+  });
+});
+
 app.listen(PORT, () =>
-  console.log(`🚀 Virtual CDN running → http://localhost:${PORT}/cdn/`)
+  console.log(
+    `🚀 Virtual CDN running → http://localhost:${PORT}/cdn/\n📋 Manifest (Public) → http://localhost:${PORT}/manifest/public\n🔐 Manifest (Admin) → http://localhost:${PORT}/manifest/admin\n✅ Health → http://localhost:${PORT}/health`
+  )
 );
-// حالا می‌توانی فایل‌ها را از طریق آدرس‌هایی مثل این بگیری:
-// http://localhost:4000/cdn/api/theme.json
-// http://localhost:4000/cdn/styles/global.css
