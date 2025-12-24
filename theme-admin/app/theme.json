@@ -82,5 +82,25 @@
     "Header1": {
       "className": "text-xl text-primary-100 p-10  mx-10 border rounded-lg bg-red-700 shadow-lg shadow-cyan-500/50 "
     }
+  },
+  "webComponentsStyles": {
+    "cti-footer": {
+      "cssVariables": {
+        "--cta-bg": "#4f46e5",
+        "--cta-color": "#ffffff",
+        "--surface": "#f9fafb"
+      },
+      "tokens": {
+        "primary.color": "#4f46e5",
+        "text.muted": "#4b5563"
+      },
+      "variant": "primary",
+      "size": "md",
+      "states": {
+        "hover": false,
+        "focus": false,
+        "disabled": false
+      }
+    }
   }
 }
