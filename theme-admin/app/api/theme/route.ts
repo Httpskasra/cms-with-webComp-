@@ -1,35 +1,35 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { readThemeFile, writeThemeFile } from "../../../src/lib/themeFile";
-
-const CDN_REFRESH_URL =
-  process.env.CDN_REFRESH_URL || "http://localhost:4000/refresh-cache";
+import {
+  enforceDevOnly,
+  startPublishJob,
+} from "../../../src/lib/publishJobs";
 
 export async function GET() {
+  const devGuard = enforceDevOnly();
+  if (devGuard) return devGuard;
+
   const theme = await readThemeFile();
   return NextResponse.json(theme);
 }
 
 export async function POST(req: Request) {
+  const devGuard = enforceDevOnly();
+  if (devGuard) return devGuard;
+
   try {
     const body = await req.json();
     // اینجا می‌توانی validate کنی (مثلاً وجود tokens, components, ...)
     await writeThemeFile(body);
 
-    // بعد از آپدیت فایل، به CDN بگو cache این فایل را refresh کند
-    try {
-      await fetch(CDN_REFRESH_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        // ⚠️ دقت کن: مسیر logical همان چیزی است که client از CDN می‌گیرد
-        body: JSON.stringify({ filePath: "api/theme.json" }),
-      });
-      // console.log("CDN cache refresh requested for api/theme.json");
-    } catch (err: any) {
-      console.error("⚠️ CDN refresh failed (ادامه می‌دهیم):", err.message);
-    }
+    const requestedBy = req.headers.get("x-admin-user") || "dev-user";
+    const job = startPublishJob({
+      component: "theme.json",
+      requestedBy,
+    });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, job });
   } catch (e: any) {
     console.error("Write theme error", e);
     return NextResponse.json(
