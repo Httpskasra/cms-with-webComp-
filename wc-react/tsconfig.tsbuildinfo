@@ -1,0 +1,1 @@
+{"root":["./src/components/ctifooter.tsx","./src/components/ctifooterhover.tsx","./src/components/ctifootermodal.tsx","./src/components/index.ts","./src/entries/cti-footer-hover.tsx","./src/entries/cti-footer-modal.tsx","./src/entries/cti-footer.tsx","./src/hooks/usewebcomponent.ts"],"errors":true,"version":"5.9.3"}

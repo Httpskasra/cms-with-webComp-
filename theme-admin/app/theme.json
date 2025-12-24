@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "tokens": {
+    "colors": {
+      "primary": "#4f46e5",
+      "secondary": "#f97316",
+      "background": "#ffffff",
+      "text": "#111827"
+    },
+    "radius": {
+      "sm": "4px",
+      "md": "8px",
+      "lg": "9999px"
+    },
+    "spacing": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "12px",
+      "lg": "16px",
+      "xl": "24px"
+    }
+  },
+  "components": {
+    "text": {
+      "base": {
+        "fontSize": "160px",
+        "color": "#111827",
+        "lineHeight": "1.5"
+      }
+    },
+    "Footer": {
+      "props": {
+        "mode": "hover",
+        "buttonText": "hi",
+        "modalTitle": "Contact Us1",
+        "modalBody": "Write us at support@examplesssss.com",
+        "hoverLabel": "123",
+        "dropdownItems": [
+          {
+            "label": "Impressum",
+            "href": "/impressum"
+          },
+          {
+            "label": "Privacy",
+            "href": "/privacy"
+          },
+          {
+            "label": "salam",
+            "href": "/google"
+          },
+          {
+            "label": "a",
+            "href": "/google"
+          }
+        ]
+      }
+    },
+    "Button": {
+      "base": {
+        "padding": "8px 16px",
+        "borderRadius": "8px",
+        "border": "none",
+        "fontWeight": 600
+      },
+      "variants": {
+        "primary": {
+          "backgroundColor": "#4f46e5",
+          "color": "#ffffff"
+        },
+        "secondary": {
+          "backgroundColor": "#f97316",
+          "color": "#111827"
+        }
+      }
+    },
+    "Header": {
+      "base": {
+        "fontSize": "120px",
+        "color": "red"
+      }
+    },
+    "Header1": {
+      "className": "text-xl text-primary-100 p-10  mx-10 border rounded-lg bg-red-700 shadow-lg shadow-cyan-500/50 "
+    }
+  }
+}

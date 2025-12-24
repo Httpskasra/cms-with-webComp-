@@ -1,0 +1,35 @@
+{
+  "version": 1,
+  "tokens": {
+    "colors": {
+      "primary": "#4f46e5",
+      "secondary": "#f97316",
+      "background": "#ffffff",
+      "text": "#111827"
+    },
+    "radius": { "sm": "4px", "md": "8px", "lg": "9999px" },
+    "spacing": {
+      "xs": "4px",
+      "sm": "8px",
+      "md": "12px",
+      "lg": "16px",
+      "xl": "24px"
+    }
+  },
+  "components": {
+    "Button": {
+      "base": {
+        "padding": "8px 16px",
+        "borderRadius": "8px",
+        "border": "none",
+        "fontWeight": 600
+      },
+      "variants": {
+        "primary": { "backgroundColor": "#4f46e5", "color": "#ffffff" },
+        "secondary": { "backgroundColor": "#f97316", "color": "#111827" }
+      }
+    },
+    "Header": { "base": { "fontSize": "120px", "color": "red" } },
+    "Header1": { "className": "font-sm bg-red-600 px-100" }
+  }
+}
