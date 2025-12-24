@@ -14,6 +14,8 @@ export type ThemeJSON = {
       };
       className?: string;
       props?: Record<string, any>;
+      docs?: string;
+      notes?: string;
     };
   };
 };
