@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { Suspense, useEffect, useMemo, useState } from "react";
 
@@ -82,6 +84,10 @@ export default function AdminPage() {
     <section>
       <h2>Theme Editor</h2>
       <p>فایل theme.json را ادیت کن (بدون دیتابیس، مستقیم روی فایل).</p>
+      <div style={{ margin: "12px 0", padding: 12, border: "1px solid #e5e7eb" }}>
+        <p style={{ marginTop: 0 }}>Sandbox جدید برای ویرایش وب‌کامپوننت:</p>
+        <Link href="/admin/web-components/cti-footer">/admin/web-components/cti-footer</Link>
+      </div>
       <textarea
         style={{ width: "100%", height: "400px", fontFamily: "monospace" }}
         value={jsonText}
