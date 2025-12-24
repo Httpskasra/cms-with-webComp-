@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // lib/admin/manifestClient.ts - Fetch and cache manifest
 
 export interface ComponentProp {
@@ -62,8 +63,8 @@ let cachedAdminManifest: Manifest | null = null;
 let cachedPublicManifest: Manifest | null = null;
 
 export async function getAdminManifest(): Promise<Manifest> {
-  if (cachedAdminManifest) {
-    return cachedAdminManifest;
+  if (cachedAdminManifest !== null) {
+    return cachedAdminManifest as Manifest;
   }
 
   try {
@@ -75,7 +76,7 @@ export async function getAdminManifest(): Promise<Manifest> {
       throw new Error(`Failed to fetch admin manifest: ${res.status}`);
 
     cachedAdminManifest = await res.json();
-    return cachedAdminManifest;
+    return cachedAdminManifest as Manifest;
   } catch (error) {
     console.error("Failed to load admin manifest:", error);
     throw error;
@@ -83,8 +84,8 @@ export async function getAdminManifest(): Promise<Manifest> {
 }
 
 export async function getPublicManifest(): Promise<Manifest> {
-  if (cachedPublicManifest) {
-    return cachedPublicManifest;
+  if (cachedPublicManifest !== null) {
+    return cachedPublicManifest as Manifest;
   }
 
   try {
@@ -96,7 +97,7 @@ export async function getPublicManifest(): Promise<Manifest> {
       throw new Error(`Failed to fetch public manifest: ${res.status}`);
 
     cachedPublicManifest = await res.json();
-    return cachedPublicManifest;
+    return cachedPublicManifest as Manifest;
   } catch (error) {
     console.error("Failed to load public manifest:", error);
     throw error;

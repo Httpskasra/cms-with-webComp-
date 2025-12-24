@@ -20,21 +20,21 @@ export interface ComponentProp {
   options?: string[];
 }
 
-export interface ComponentRegistry {
+export type Manifest = {
+  version: string;
+  registry: ComponentRegistry[];
+  designTokens: Record<string, any>;
+};
+
+export type ComponentRegistry = {
   id: string;
   name: string;
   bundle: string;
   version: string;
   description: string;
-  props: ComponentProp[];
-  cssVars: CSSVariable[];
-}
-
-export interface PublicManifest {
-  version: string;
-  registry: ComponentRegistry[];
-  designTokens: Record<string, Record<string, DesignToken>>;
-}
+  props?: any[];
+  cssVars?: any[];
+};
 
 export type ThemeJSON = {
   version: number | string;

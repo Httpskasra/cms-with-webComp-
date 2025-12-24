@@ -4,8 +4,8 @@
 "use client";
 
 import { useState } from "react";
-import { ComponentRegistry } from "@/lib/manifestClient";
-import { generateVersionId } from "@/lib/themeVersioning";
+import { ComponentRegistry } from "@/src/lib/manifestClient";
+// import { generateVersionId } from "@/src/lib/themeVersioning";
 
 interface PublishThemeProps {
   component: ComponentRegistry;

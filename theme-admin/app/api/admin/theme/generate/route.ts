@@ -1,11 +1,13 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // app/api/admin/theme/generate/route.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NextRequest, NextResponse } from "next/server";
 import {
   generateVersionHash,
   generateVersionId,
   getVersionedAssetPath,
-} from "@/lib/themeVersioning";
+} from "@/src/lib/themeVersioning";
 import { promises as fs } from "fs";
 import path from "path";
 

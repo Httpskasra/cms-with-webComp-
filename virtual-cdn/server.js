@@ -104,7 +104,22 @@ function getCacheControl(filePath) {
 
 // روت اصلی CDN: همیشه اول از cache می‌خواند
 app.get("/cdn/*", async (req, res) => {
-  const filePath = req.params[0]; // مثلا "api/theme.json" یا "file.css"
+  const filePath = req.params[0]; // مثلا "api/theme.json" یا "wc/cti-footer-hover.js"
+
+  // ✅ اگر فایل از web components است → از /wc static route برگردان
+  if (filePath.startsWith("wc/")) {
+    try {
+      const wcFilePath = path.join(process.cwd(), "public", filePath);
+      const content = await fs.readFile(wcFilePath);
+      res.setHeader("Cache-Control", getCacheControl(filePath));
+      res.setHeader("Content-Type", "application/javascript; charset=utf-8");
+      res.setHeader("Access-Control-Allow-Origin", "*");
+      return res.send(content);
+    } catch (err) {
+      console.error("❌ WC File Not Found:", filePath);
+      return res.status(404).send("File Not Found");
+    }
+  }
 
   await ensureCache();
 
@@ -241,13 +256,11 @@ app.post("/invalidate-cache", async (req, res) => {
     });
   } catch (err) {
     console.error("❌ Cache invalidation error:", err.message);
-    return res
-      .status(500)
-      .json({
-        ok: false,
-        error: "Cannot invalidate cache",
-        details: err.message,
-      });
+    return res.status(500).json({
+      ok: false,
+      error: "Cannot invalidate cache",
+      details: err.message,
+    });
   }
 });
 

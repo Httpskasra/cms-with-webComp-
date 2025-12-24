@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 // app/api/admin/theme/versions/route.ts
 
 import { NextRequest, NextResponse } from "next/server";

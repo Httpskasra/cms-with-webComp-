@@ -1,9 +1,10 @@
 // components/admin/ComponentPreview.tsx
 
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useRef, useState } from "react";
-import { ComponentRegistry } from "@/lib/manifestClient";
+import { ComponentRegistry } from "@/src/lib/manifestClient";
 
 interface ComponentPreviewProps {
   component: ComponentRegistry;

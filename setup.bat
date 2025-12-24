@@ -57,19 +57,19 @@ echo [4/6] Installing dependencies...
 
 echo Installing virtual-cdn...
 cd virtual-cdn
-call npm install >nul 2>&1
+call yarn >nul 2>&1
 cd ..
 echo ✅ virtual-cdn ready
 
 echo Installing theme-admin...
 cd theme-admin
-call npm install >nul 2>&1
+call yarn >nul 2>&1
 cd ..
 echo ✅ theme-admin ready
 
 echo Installing theme-client...
 cd theme-client
-call npm install >nul 2>&1
+call yarn >nul 2>&1
 cd ..
 echo ✅ theme-client ready
 echo.
@@ -86,13 +86,13 @@ echo.
 echo Start the services in separate terminals:
 echo.
 echo Terminal 1 - Virtual CDN:
-echo   cd virtual-cdn ^& npm start
+echo   cd virtual-cdn ^& yarn  start
 echo.
 echo Terminal 2 - Admin Interface:
-echo   cd theme-admin ^& npm run dev
+echo   cd theme-admin ^& yarn  dev
 echo.
 echo Terminal 3 - Client App:
-echo   cd theme-client ^& npm run dev
+echo   cd theme-client ^& yarn  dev
 echo.
 echo Then visit:
 echo   📋 Admin Catalog: http://localhost:3001/admin/components

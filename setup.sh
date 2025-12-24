@@ -57,19 +57,19 @@ fi
 echo -e "${BLUE}[4/6]${NC} Installing dependencies..."
 echo -e "${YELLOW}Installing virtual-cdn...${NC}"
 cd virtual-cdn
-npm install > /dev/null 2>&1
+yarn > /dev/null 2>&1
 cd ..
 echo -e "${GREEN}✅ virtual-cdn ready${NC}"
 
 echo -e "${YELLOW}Installing theme-admin...${NC}"
 cd theme-admin
-npm install > /dev/null 2>&1
+yarn > /dev/null 2>&1
 cd ..
 echo -e "${GREEN}✅ theme-admin ready${NC}"
 
 echo -e "${YELLOW}Installing theme-client...${NC}"
 cd theme-client
-npm install > /dev/null 2>&1
+yarn > /dev/null 2>&1
 cd ..
 echo -e "${GREEN}✅ theme-client ready${NC}"
 
@@ -85,13 +85,13 @@ echo ""
 echo "Start the services in separate terminals:"
 echo ""
 echo -e "${YELLOW}Terminal 1 - Virtual CDN:${NC}"
-echo "  cd virtual-cdn && npm start"
+echo "  cd virtual-cdn && yarn start"
 echo ""
 echo -e "${YELLOW}Terminal 2 - Admin Interface:${NC}"
-echo "  cd theme-admin && npm run dev"
+echo "  cd theme-admin && yarn dev"
 echo ""
 echo -e "${YELLOW}Terminal 3 - Client App:${NC}"
-echo "  cd theme-client && npm run dev"
+echo "  cd theme-client && yarn dev"
 echo ""
 echo "Then visit:"
 echo "  📋 Admin Catalog: http://localhost:3001/admin/components"

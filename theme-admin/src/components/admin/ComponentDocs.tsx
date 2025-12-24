@@ -2,7 +2,7 @@
 
 "use client";
 
-import { ComponentDoc } from "@/lib/manifestClient";
+import { ComponentDoc } from "@/src/lib/manifestClient";
 
 interface ComponentDocsProps {
   docs: ComponentDoc;

@@ -1,4 +1,5 @@
 // app/api/admin/theme/rollback/route.ts
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { NextRequest, NextResponse } from "next/server";
 import { promises as fs } from "fs";

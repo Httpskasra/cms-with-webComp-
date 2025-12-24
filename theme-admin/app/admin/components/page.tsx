@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ComponentRegistry, getAdminManifest } from "@/lib/manifestClient";
+import { ComponentRegistry, getAdminManifest } from "@/src/lib/manifestClient";
 
 export default function ComponentsPage() {
   const [components, setComponents] = useState<ComponentRegistry[]>([]);

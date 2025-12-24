@@ -1,12 +1,13 @@
 "use client";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { ComponentRegistry, getComponentById } from "@/lib/manifestClient";
-import ComponentPreview from "@/components/admin/ComponentPreview";
-import TokenEditor from "@/components/admin/TokenEditor";
-import ComponentDocs from "@/components/admin/ComponentDocs";
-import PublishTheme from "@/components/admin/PublishTheme";
+import { ComponentRegistry, getComponentById } from "@/src/lib/manifestClient";
+import ComponentPreview from "@/src/components/admin/ComponentPreview";
+import TokenEditor from "@/src/components/admin/TokenEditor";
+import ComponentDocs from "@/src/components/admin/ComponentDocs";
+import PublishTheme from "@/src/components/admin/PublishTheme";
 
 type TabType = "preview" | "props" | "tokens" | "overrides" | "docs";
 

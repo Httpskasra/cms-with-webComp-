@@ -1,4 +1,5 @@
 // lib/admin/themeVersioning.ts - Version management for themes
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import crypto from "crypto";
 

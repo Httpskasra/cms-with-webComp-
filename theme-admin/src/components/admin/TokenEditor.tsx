@@ -1,9 +1,10 @@
 // components/admin/TokenEditor.tsx
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 "use client";
 
 import { useState } from "react";
-import { ComponentRegistry } from "@/lib/manifestClient";
+import { ComponentRegistry } from "@/src/lib/manifestClient";
 
 interface TokenEditorProps {
   component: ComponentRegistry;

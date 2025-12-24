@@ -1,5 +1,6 @@
 // src/lib/manifestClient.ts
 // Client-safe manifest loader - filters out admin-only data
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import type { Manifest, ComponentRegistry } from "./themeTypes";
 

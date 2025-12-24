@@ -1,3 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
 // app/admin/preview/[component]/page.tsx
 // This is a dev-only preview page that runs inside an iframe
 // It dynamically loads and renders a Web Component with live token updates
@@ -28,10 +31,15 @@ export default function PreviewPage() {
     // Load Web Component bundle
     const loadComponent = async () => {
       try {
-        // Fetch manifest to get bundle URL
-        const manifest = await fetch("/manifest.admin.json").then((r) =>
-          r.json()
-        );
+        // Fetch manifest from Virtual CDN
+        const cdnUrl = "http://localhost:4000/manifest/admin";
+        const response = await fetch(cdnUrl);
+
+        if (!response.ok) {
+          throw new Error(`Failed to fetch manifest: ${response.status}`);
+        }
+
+        const manifest = await response.json();
         const component = manifest.registry.find(
           (c: any) => c.id === componentId
         );
@@ -41,9 +49,12 @@ export default function PreviewPage() {
           return;
         }
 
-        // Load the script
+        // Load the script from CDN
+        const bundleUrl = component.bundle.startsWith("http")
+          ? component.bundle
+          : `http://localhost:4000${component.bundle}`;
         const script = document.createElement("script");
-        script.src = component.bundle;
+        script.src = bundleUrl;
         script.async = true;
         document.head.appendChild(script);
 
@@ -52,7 +63,7 @@ export default function PreviewPage() {
         };
 
         script.onerror = () => {
-          console.error(`Failed to load ${component.bundle}`);
+          console.error(`Failed to load bundle: ${bundleUrl}`);
         };
       } catch (error) {
         console.error("Failed to load component manifest:", error);
@@ -122,7 +133,7 @@ export default function PreviewPage() {
                   backgroundColor: styles.backgroundColor,
                 },
               },
-              event.origin
+              { targetOrigin: event.origin }
             );
           }
           break;
@@ -140,7 +151,7 @@ export default function PreviewPage() {
               type: "themeExport",
               payload: theme,
             },
-            event.origin
+            { targetOrigin: event.origin }
           );
           break;
       }
@@ -151,40 +162,35 @@ export default function PreviewPage() {
   }, []);
 
   return (
-    <html>
-      <head>
-        <title>{componentId} Preview</title>
-        <style>{`
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
+    <>
+      <style>{`
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+        }
 
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: #f9fafb;
-            padding: 2rem;
-          }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+          background: #f9fafb;
+          padding: 2rem;
+        }
 
-          #preview-container {
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
-            padding: 2rem;
-            min-height: 400px;
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-          }
+        #preview-container {
+          background: white;
+          border: 1px solid #e5e7eb;
+          border-radius: 0.5rem;
+          padding: 2rem;
+          min-height: 400px;
+          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
 
-          /* Apply initial tokens */
-          ${Object.entries(initialTokens)
-            .map(([varName, value]) => `--${varName}: ${value};`)
-            .join("\n")}
-        `}</style>
-      </head>
-      <body>
-        <div id="preview-container" ref={containerRef} />
-      </body>
-    </html>
+        /* Apply initial tokens */
+        ${Object.entries(initialTokens)
+          .map(([varName, value]) => `--${varName}: ${value};`)
+          .join("\n")}
+      `}</style>
+      <div id="preview-container" ref={containerRef} />
+    </>
   );
 }
