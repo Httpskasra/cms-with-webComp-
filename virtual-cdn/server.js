@@ -184,6 +184,87 @@ app.get("/manifest/admin", async (req, res) => {
   }
 });
 
+// New endpoints: components index and per-component JSON + site info
+app.get("/components/index", async (req, res) => {
+  const manifestPath = path.join(CACHE_DIR, "manifest.admin.json");
+  try {
+    const content = await fs.readFile(manifestPath, "utf-8");
+    const manifest = JSON.parse(content);
+
+    // Build a lightweight index for admin search (includes admin-only flag and bundle)
+    const index = {
+      version: manifest.version,
+      registry: manifest.registry.map((c) => ({
+        id: c.id,
+        name: c.name,
+        version: c.version,
+        description: c.description,
+        adminOnly: c.adminOnly || false,
+        bundle: c.bundle || null,
+        props: c.props || [],
+        cssVars: c.cssVars || [],
+      })),
+    };
+
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-cache, must-revalidate");
+    return res.json(index);
+  } catch (err) {
+    console.error("❌ Could not build components index:", err.message);
+    return res.status(500).json({ error: "Cannot build components index" });
+  }
+});
+
+app.get("/components/:id", async (req, res) => {
+  const { id } = req.params;
+  const manifestPath = path.join(CACHE_DIR, "manifest.admin.json");
+
+  try {
+    const content = await fs.readFile(manifestPath, "utf-8");
+    const manifest = JSON.parse(content);
+    const comp = manifest.registry.find((c) => c.id === id);
+    if (!comp) return res.status(404).json({ error: "Component not found" });
+
+    // Serve full component information (including docs, cssVars, overrides)
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-cache, must-revalidate");
+    return res.json(comp);
+  } catch (err) {
+    console.error("❌ Error serving component:", err.message);
+    return res.status(500).json({ error: "Cannot read component" });
+  }
+});
+
+app.get("/site", async (req, res) => {
+  // Serve public-facing site JSON (designTokens + minimal registry)
+  const publicPath = path.join(CACHE_DIR, "manifest.public.json");
+  try {
+    const content = await fs.readFile(publicPath, "utf-8");
+    const manifest = JSON.parse(content);
+
+    const site = {
+      version: manifest.version,
+      designTokens: manifest.designTokens || {},
+      registry: (manifest.registry || []).map((c) => ({
+        id: c.id,
+        name: c.name,
+        bundle: c.bundle,
+        version: c.version,
+        description: c.description,
+        props: c.props || [],
+        cssVars: c.cssVars || [],
+      })),
+    };
+
+    res.setHeader("Content-Type", "application/json");
+    res.setHeader("Cache-Control", "no-cache, must-revalidate");
+    return res.json(site);
+  } catch (err) {
+    console.error("❌ Could not build site JSON:", err.message);
+    return res.status(500).json({ error: "Cannot build site JSON" });
+  }
+});
+
 // ✅ Versioned theme endpoint - serve theme files with hash
 app.get("/api/theme/:env/:filename", async (req, res) => {
   const { env, filename } = req.params;

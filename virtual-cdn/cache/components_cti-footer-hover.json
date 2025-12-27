@@ -1,0 +1,28 @@
+{
+  "id": "cti-footer-hover",
+  "name": "CTI Footer Hover",
+  "bundle": "http://localhost:4000/cdn/wc/cti-footer-hover.js",
+  "version": "1.0.0",
+  "description": "Footer hover variant",
+  "adminOnly": false,
+  "props": [
+    {
+      "name": "label",
+      "type": "string",
+      "default": "Help",
+      "description": "Tooltip label"
+    }
+  ],
+  "cssVars": [
+    {
+      "name": "--hover-bg",
+      "description": "Hover background",
+      "default": "#f3f4f6",
+      "type": "color"
+    }
+  ],
+  "docs": {
+    "adminOnly": true,
+    "overview": "Specialized hover variant of CTI Footer"
+  }
+}

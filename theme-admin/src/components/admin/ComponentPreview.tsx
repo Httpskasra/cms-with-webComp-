@@ -17,7 +17,7 @@ export default function ComponentPreview({
 }: ComponentPreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
-
+  
   // Create element tag name from component id (e.g., "cti-footer" -> "cti-footer")
   const tagName = component.id
     .replace(/([a-z])([A-Z])/g, "$1-$2")

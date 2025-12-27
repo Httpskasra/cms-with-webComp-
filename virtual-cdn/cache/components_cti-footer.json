@@ -1,0 +1,103 @@
+{
+  "id": "cti-footer",
+  "name": "CTI Footer",
+  "bundle": "http://localhost:4000/cdn/wc/cti-footer.js",
+  "version": "1.0.0",
+  "description": "Footer component with modal and hover features",
+  "adminOnly": false,
+  "props": [
+    {
+      "name": "mode",
+      "type": "string",
+      "default": "hover",
+      "options": ["hover", "modal"],
+      "description": "Behavior mode: hover for tooltip, modal for dialog"
+    },
+    {
+      "name": "buttonText",
+      "type": "string",
+      "default": "Contact",
+      "description": "Text displayed on the button"
+    },
+    {
+      "name": "modalTitle",
+      "type": "string",
+      "default": "Contact Us",
+      "description": "Title shown in modal"
+    },
+    {
+      "name": "modalBody",
+      "type": "string",
+      "default": "Get in touch with us",
+      "description": "Body text in modal"
+    },
+    {
+      "name": "hoverLabel",
+      "type": "string",
+      "default": "Help",
+      "description": "Tooltip text in hover mode"
+    },
+    {
+      "name": "dropdownItems",
+      "type": "array",
+      "default": "[]",
+      "description": "Array of {label, href} objects for footer links"
+    }
+  ],
+  "cssVars": [
+    {
+      "name": "--footer-bg",
+      "description": "Footer background color",
+      "default": "#ffffff",
+      "type": "color"
+    },
+    {
+      "name": "--footer-text-color",
+      "description": "Footer text color",
+      "default": "#111827",
+      "type": "color"
+    },
+    {
+      "name": "--footer-border",
+      "description": "Footer border color",
+      "default": "#e5e7eb",
+      "type": "color"
+    },
+    {
+      "name": "--button-bg",
+      "description": "Button background",
+      "default": "#4f46e5",
+      "type": "color"
+    },
+    {
+      "name": "--button-text",
+      "description": "Button text color",
+      "default": "#ffffff",
+      "type": "color"
+    }
+  ],
+  "slots": [{ "name": "default", "description": "Main footer content" }],
+  "events": [
+    {
+      "name": "contact-click",
+      "description": "Fired when contact button is clicked"
+    }
+  ],
+  "docs": {
+    "adminOnly": true,
+    "overview": "The CTI Footer component provides a flexible footer with support for contact modals and hover tooltips.",
+    "usage": "<cti-footer mode=\"hover\" buttonText=\"Contact\" hoverLabel=\"Need help?\"></cti-footer>",
+    "examples": [
+      {
+        "title": "Hover Mode",
+        "code": "<cti-footer mode='hover' buttonText='?' hoverLabel='Click for help'></cti-footer>"
+      },
+      {
+        "title": "Modal Mode",
+        "code": "<cti-footer mode='modal' modalTitle='Contact' modalBody='Email: hello@example.com'></cti-footer>"
+      }
+    ],
+    "accessibility": "Component uses ARIA labels and semantic HTML for accessibility",
+    "browserSupport": "All modern browsers with Web Components support"
+  }
+}

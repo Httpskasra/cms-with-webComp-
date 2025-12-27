@@ -1,0 +1,73 @@
+{
+  "version": "1.0.0",
+  "registry": [
+    {
+      "id": "cti-footer",
+      "name": "CTI Footer",
+      "version": "1.0.0",
+      "description": "Footer component with modal and hover features",
+      "adminOnly": false,
+      "bundle": "http://localhost:4000/cdn/wc/cti-footer.js",
+      "props": [
+        {
+          "name": "mode",
+          "type": "string",
+          "default": "hover",
+          "options": ["hover", "modal"]
+        },
+        { "name": "buttonText", "type": "string", "default": "Contact" },
+        { "name": "modalTitle", "type": "string", "default": "Contact Us" },
+        {
+          "name": "modalBody",
+          "type": "string",
+          "default": "Get in touch with us"
+        },
+        { "name": "hoverLabel", "type": "string", "default": "Help" },
+        { "name": "dropdownItems", "type": "array", "default": "[]" }
+      ],
+      "cssVars": [
+        { "name": "--footer-bg", "default": "#ffffff", "type": "color" },
+        {
+          "name": "--footer-text-color",
+          "default": "#111827",
+          "type": "color"
+        },
+        { "name": "--footer-border", "default": "#e5e7eb", "type": "color" },
+        { "name": "--button-bg", "default": "#4f46e5", "type": "color" },
+        { "name": "--button-text", "default": "#ffffff", "type": "color" }
+      ]
+    },
+    {
+      "id": "cti-footer-hover",
+      "name": "CTI Footer Hover",
+      "version": "1.0.0",
+      "description": "Footer hover variant",
+      "adminOnly": false,
+      "bundle": "http://localhost:4000/cdn/wc/cti-footer-hover.js",
+      "props": [{ "name": "label", "type": "string", "default": "Help" }],
+      "cssVars": [
+        { "name": "--hover-bg", "default": "#f3f4f6", "type": "color" }
+      ]
+    },
+    {
+      "id": "cti-footer-modal",
+      "name": "CTI Footer Modal",
+      "version": "1.0.0",
+      "description": "Footer modal variant",
+      "adminOnly": false,
+      "bundle": "http://localhost:4000/cdn/wc/cti-footer-modal.js",
+      "props": [
+        { "name": "title", "type": "string", "default": "Contact" },
+        { "name": "body", "type": "string", "default": "" }
+      ],
+      "cssVars": [
+        { "name": "--modal-bg", "default": "#ffffff", "type": "color" },
+        {
+          "name": "--modal-shadow",
+          "default": "0 4px 6px rgba(0, 0, 0, 0.1)",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

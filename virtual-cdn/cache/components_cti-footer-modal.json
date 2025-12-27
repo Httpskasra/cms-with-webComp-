@@ -1,0 +1,40 @@
+{
+  "id": "cti-footer-modal",
+  "name": "CTI Footer Modal",
+  "bundle": "http://localhost:4000/cdn/wc/cti-footer-modal.js",
+  "version": "1.0.0",
+  "description": "Footer modal variant",
+  "adminOnly": false,
+  "props": [
+    {
+      "name": "title",
+      "type": "string",
+      "default": "Contact",
+      "description": "Modal title"
+    },
+    {
+      "name": "body",
+      "type": "string",
+      "default": "",
+      "description": "Modal body content"
+    }
+  ],
+  "cssVars": [
+    {
+      "name": "--modal-bg",
+      "description": "Modal background",
+      "default": "#ffffff",
+      "type": "color"
+    },
+    {
+      "name": "--modal-shadow",
+      "description": "Modal shadow",
+      "default": "0 4px 6px rgba(0, 0, 0, 0.1)",
+      "type": "string"
+    }
+  ],
+  "docs": {
+    "adminOnly": true,
+    "overview": "Specialized modal variant of CTI Footer"
+  }
+}

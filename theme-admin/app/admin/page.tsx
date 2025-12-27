@@ -37,6 +37,7 @@ export default function AdminPage() {
       <h1>Theme Admin</h1>
       <p>فایل theme.json را ادیت کن (بدون دیتابیس، مستقیم روی فایل).</p>
       <textarea
+        className="bg-gray-200"
         style={{ width: "100%", height: "400px", fontFamily: "monospace" }}
         value={jsonText}
         onChange={(e) => setJsonText(e.target.value)}

@@ -1,0 +1,163 @@
+{
+  "version": "1.0.0",
+  "designTokens": {
+    "colors": {
+      "primary": {
+        "value": "#4f46e5",
+        "description": "Primary brand color",
+        "type": "color"
+      },
+      "secondary": {
+        "value": "#f97316",
+        "description": "Secondary brand color",
+        "type": "color"
+      },
+      "success": {
+        "value": "#22c55e",
+        "description": "Success state color",
+        "type": "color"
+      },
+      "warning": {
+        "value": "#eab308",
+        "description": "Warning state color",
+        "type": "color"
+      },
+      "error": {
+        "value": "#ef4444",
+        "description": "Error state color",
+        "type": "color"
+      },
+      "background": {
+        "value": "#ffffff",
+        "description": "Background color",
+        "type": "color"
+      },
+      "foreground": {
+        "value": "#111827",
+        "description": "Text/foreground color",
+        "type": "color"
+      },
+      "border": {
+        "value": "#e5e7eb",
+        "description": "Border color",
+        "type": "color"
+      }
+    },
+    "radius": {
+      "none": {
+        "value": "0px",
+        "description": "No border radius",
+        "type": "dimension"
+      },
+      "sm": {
+        "value": "4px",
+        "description": "Small border radius",
+        "type": "dimension"
+      },
+      "md": {
+        "value": "8px",
+        "description": "Medium border radius",
+        "type": "dimension"
+      },
+      "lg": {
+        "value": "16px",
+        "description": "Large border radius",
+        "type": "dimension"
+      },
+      "full": {
+        "value": "9999px",
+        "description": "Full/pill border radius",
+        "type": "dimension"
+      }
+    },
+    "spacing": {
+      "xs": {
+        "value": "4px",
+        "description": "Extra small spacing",
+        "type": "dimension"
+      },
+      "sm": {
+        "value": "8px",
+        "description": "Small spacing",
+        "type": "dimension"
+      },
+      "md": {
+        "value": "12px",
+        "description": "Medium spacing",
+        "type": "dimension"
+      },
+      "lg": {
+        "value": "16px",
+        "description": "Large spacing",
+        "type": "dimension"
+      },
+      "xl": {
+        "value": "24px",
+        "description": "Extra large spacing",
+        "type": "dimension"
+      }
+    }
+  },
+  "registry": [
+    {
+      "id": "cti-footer",
+      "name": "CTI Footer",
+      "bundle": "http://localhost:4000/cdn/wc/cti-footer.js",
+      "version": "1.0.0",
+      "description": "Footer component with modal and hover features",
+      "props": [
+        { "name": "mode", "type": "string", "default": "hover" },
+        { "name": "buttonText", "type": "string", "default": "Contact" },
+        { "name": "modalTitle", "type": "string", "default": "Contact Us" },
+        {
+          "name": "modalBody",
+          "type": "string",
+          "default": "Get in touch with us"
+        },
+        { "name": "hoverLabel", "type": "string", "default": "Help" },
+        { "name": "dropdownItems", "type": "array", "default": "[]" }
+      ],
+      "cssVars": [
+        { "name": "--footer-bg", "default": "#ffffff", "type": "color" },
+        {
+          "name": "--footer-text-color",
+          "default": "#111827",
+          "type": "color"
+        },
+        { "name": "--footer-border", "default": "#e5e7eb", "type": "color" },
+        { "name": "--button-bg", "default": "#4f46e5", "type": "color" },
+        { "name": "--button-text", "default": "#ffffff", "type": "color" }
+      ]
+    },
+    {
+      "id": "cti-footer-hover",
+      "name": "CTI Footer Hover",
+      "bundle": "http://localhost:4000/cdn/wc/cti-footer-hover.js",
+      "version": "1.0.0",
+      "description": "Footer hover variant",
+      "props": [{ "name": "label", "type": "string", "default": "Help" }],
+      "cssVars": [
+        { "name": "--hover-bg", "default": "#f3f4f6", "type": "color" }
+      ]
+    },
+    {
+      "id": "cti-footer-modal",
+      "name": "CTI Footer Modal",
+      "bundle": "http://localhost:4000/cdn/wc/cti-footer-modal.js",
+      "version": "1.0.0",
+      "description": "Footer modal variant",
+      "props": [
+        { "name": "title", "type": "string", "default": "Contact" },
+        { "name": "body", "type": "string", "default": "" }
+      ],
+      "cssVars": [
+        { "name": "--modal-bg", "default": "#ffffff", "type": "color" },
+        {
+          "name": "--modal-shadow",
+          "default": "0 4px 6px rgba(0, 0, 0, 0.1)",
+          "type": "string"
+        }
+      ]
+    }
+  ]
+}

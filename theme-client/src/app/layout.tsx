@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { fetchTheme } from "../lib/theme";
+import type { ThemeJSON } from "../lib/themeTypes";
 import { ThemeProvider } from "../contexts/ThemeContext";
 import { ClientWrapper } from "@/components/ClientWrapper";
 
@@ -8,7 +9,7 @@ export const metadata = {
 };
 
 // Fallback theme in case fetch fails
-const FALLBACK_THEME = {
+const FALLBACK_THEME: ThemeJSON = {
   version: 1,
   tokens: {
     colors: {
@@ -38,7 +39,7 @@ export default async function RootLayout({
 }: {
   children: ReactNode;
 }) {
-  let theme = FALLBACK_THEME;
+  let theme: ThemeJSON = FALLBACK_THEME;
 
   try {
     const fetchedTheme = await fetchTheme(); // روی سرور، با cache
@@ -60,7 +61,9 @@ export default async function RootLayout({
         <link
           rel="stylesheet"
           // href="https://hillz-cms-files.s3.ca-central-1.amazonaws.com/cms/dealerships/1/global/output.css"
-          href="http://localhost:4000/cdn/globals.css"
+          href={`${
+            process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000"
+          }/cdn/globals.css`}
         />
       </head>
       <body>

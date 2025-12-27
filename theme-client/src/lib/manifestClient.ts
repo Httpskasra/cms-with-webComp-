@@ -17,7 +17,8 @@ export async function getPublicManifest(): Promise<Manifest> {
 
   try {
     const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000";
-    const res = await fetch(`${cdnUrl}/manifest/public`, {
+    // Use new site endpoint which contains designTokens + minimal registry
+    const res = await fetch(`${cdnUrl}/site`, {
       cache: "no-store",
     });
 
@@ -25,10 +26,10 @@ export async function getPublicManifest(): Promise<Manifest> {
 
     const manifest = await res.json();
 
-    // Filter out any admin-only data
+    // Already lightweight - ensure shape matches Manifest used by client
     const filtered: Manifest = {
       version: manifest.version,
-      registry: manifest.registry.map((comp: any) => ({
+      registry: (manifest.registry || []).map((comp: any) => ({
         id: comp.id,
         name: comp.name,
         bundle: comp.bundle,
@@ -36,7 +37,6 @@ export async function getPublicManifest(): Promise<Manifest> {
         description: comp.description,
         props: comp.props || [],
         cssVars: comp.cssVars || [],
-        // NO docs, slots, events, adminOnly flag
       })),
       designTokens: manifest.designTokens || {},
     };
@@ -52,6 +52,17 @@ export async function getPublicManifest(): Promise<Manifest> {
 export async function getComponentById(
   id: string
 ): Promise<ComponentRegistry | undefined> {
+  // Try to fetch detailed component JSON from CDN (includes cssVars/docs if available)
+  try {
+    const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000";
+    const res = await fetch(`${cdnUrl}/components/${id}`, {
+      cache: "no-store",
+    });
+    if (res.ok) return (await res.json()) as ComponentRegistry;
+  } catch (err) {
+    // ignore and fallback
+  }
+
   const manifest = await getPublicManifest();
   return manifest.registry.find((c) => c.id === id);
 }
