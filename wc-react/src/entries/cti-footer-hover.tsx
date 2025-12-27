@@ -30,7 +30,10 @@ class CTIFooterHoverElement extends HTMLElement {
     root.render(
       <CTIFooterHover
         hoverLabel={config.hoverLabel || "Menu"}
-        dropdownItems={dropdownItems || config.dropdownItems}
+        buttonText={config.buttonText || "Contact"}
+        modalTitle={config.modalTitle || "Title"}
+        modalBody={config.modalBody || "Content"}
+        dropdownItems={config.dropdownItems || []}
       />
     );
   }

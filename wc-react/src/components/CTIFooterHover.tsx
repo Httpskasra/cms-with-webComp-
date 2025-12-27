@@ -7,6 +7,9 @@ interface DropdownItem {
 
 export interface CTIFooterHoverProps {
   hoverLabel?: string;
+  buttonText?: string;
+  modalTitle?: string;
+  modalBody?: string;
   dropdownItems?: DropdownItem[];
 }
 declare global {
@@ -17,6 +20,9 @@ declare global {
 
 export const CTIFooterHover: React.FC<CTIFooterHoverProps> = ({
   hoverLabel = "Menu",
+  buttonText = "Contact",
+  modalTitle = "Title",
+  modalBody = "Content",
   dropdownItems = [],
 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -138,7 +144,6 @@ export const CTIFooterHover: React.FC<CTIFooterHoverProps> = ({
           </div>
         </div>
         {ButtonRaw ? <ButtonRaw /> : null}
-        
       </div>
     </div>
   );

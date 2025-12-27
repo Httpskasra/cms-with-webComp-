@@ -98,15 +98,15 @@
       }
     }
   },
-  "registry": [
-    {
-      "id": "cti-footer",
-      "name": "CTI Footer",
-      "bundle": "http://localhost:4000/cdn/wc/cti-footer.js",
+  "components": {
+    "footer": {
+      "id": "cti-footer-hover",
+      "name": "CTI Footer Hover",
+      "bundle": "http://localhost:4000/cdn/wc/cti-footer-hover.js",
       "version": "1.0.0",
-      "description": "Footer component with modal and hover features",
+      "description": "Footer hover variant",
       "props": [
-        { "name": "mode", "type": "string", "default": "hover" },
+        { "name": "hoverLabel", "type": "string", "default": "Menu" },
         { "name": "buttonText", "type": "string", "default": "Contact" },
         { "name": "modalTitle", "type": "string", "default": "Contact Us" },
         {
@@ -114,50 +114,27 @@
           "type": "string",
           "default": "Get in touch with us"
         },
-        { "name": "hoverLabel", "type": "string", "default": "Help" },
-        { "name": "dropdownItems", "type": "array", "default": "[]" }
+        { "name": "dropdownItems", "type": "array", "default": [] }
       ],
       "cssVars": [
         { "name": "--footer-bg", "default": "#ffffff", "type": "color" },
-        {
-          "name": "--footer-text-color",
-          "default": "#111827",
-          "type": "color"
-        },
-        { "name": "--footer-border", "default": "#e5e7eb", "type": "color" },
-        { "name": "--button-bg", "default": "#4f46e5", "type": "color" },
-        { "name": "--button-text", "default": "#ffffff", "type": "color" }
-      ]
-    },
-    {
-      "id": "cti-footer-hover",
-      "name": "CTI Footer Hover",
-      "bundle": "http://localhost:4000/cdn/wc/cti-footer-hover.js",
-      "version": "1.0.0",
-      "description": "Footer hover variant",
-      "props": [{ "name": "label", "type": "string", "default": "Help" }],
-      "cssVars": [
-        { "name": "--hover-bg", "default": "#f3f4f6", "type": "color" }
-      ]
-    },
-    {
-      "id": "cti-footer-modal",
-      "name": "CTI Footer Modal",
-      "bundle": "http://localhost:4000/cdn/wc/cti-footer-modal.js",
-      "version": "1.0.0",
-      "description": "Footer modal variant",
-      "props": [
-        { "name": "title", "type": "string", "default": "Contact" },
-        { "name": "body", "type": "string", "default": "" }
+        { "name": "--footer-text", "default": "#111827", "type": "color" },
+        { "name": "--footer-btn-bg", "default": "#111827", "type": "color" },
+        { "name": "--footer-btn-text", "default": "#ffffff", "type": "color" }
       ],
-      "cssVars": [
-        { "name": "--modal-bg", "default": "#ffffff", "type": "color" },
-        {
-          "name": "--modal-shadow",
-          "default": "0 4px 6px rgba(0, 0, 0, 0.1)",
-          "type": "string"
-        }
-      ]
+      "footerConfig": {
+        "mode": "hover",
+        "buttonText": "hi",
+        "modalTitle": "Contact Us1",
+        "modalBody": "Write us at support@examplesssss.com",
+        "hoverLabel": "123",
+        "dropdownItems": [
+          { "label": "Impressum", "href": "/impressum" },
+          { "label": "Privacy", "href": "/privacy" },
+          { "label": "salam", "href": "/google" },
+          { "label": "a", "href": "/google" }
+        ]
+      }
     }
-  ]
+  }
 }

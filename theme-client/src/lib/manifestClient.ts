@@ -61,6 +61,7 @@ export async function getComponentById(
     if (res.ok) return (await res.json()) as ComponentRegistry;
   } catch (err) {
     // ignore and fallback
+    throw err;
   }
 
   const manifest = await getPublicManifest();

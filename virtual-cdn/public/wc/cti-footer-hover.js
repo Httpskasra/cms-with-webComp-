@@ -1,83 +1,4 @@
-class CTIFooterHover extends HTMLElement {
-  constructor() {
-    super();
-    this._config = null;
-    this._open = false;
-
-    this.attachShadow({ mode: "open" });
-    this._onDocClick = this._onDocClick.bind(this);
-  }
-
-  set config(value) {
-    this._config = value;
-    this.render();
-  }
-
-  get config() {
-    return this._config;
-  }
-
-  connectedCallback() {
-    if (this.hasOwnProperty("config")) {
-      const value = this.config;
-      delete this.config;
-      this.config = value;
-    }
-
-    const raw = this.getAttribute("data-config");
-    if (raw && !this._config) {
-      try {
-        this._config = JSON.parse(raw);
-      } catch (e) {}
-    }
-
-    this.render();
-    document.addEventListener("click", this._onDocClick);
-  }
-
-  disconnectedCallback() {
-    document.removeEventListener("click", this._onDocClick);
-  }
-
-  _onDocClick(e) {
-    if (!this.shadowRoot) return;
-    const path = e.composedPath?.() || [];
-    if (!path.includes(this)) {
-      this._open = false;
-      this._syncOpenState();
-    }
-  }
-
-  _toggleOpen() {
-    this._open = !this._open;
-    this._syncOpenState();
-  }
-
-  _close() {
-    this._open = false;
-    this._syncOpenState();
-  }
-
-  _syncOpenState() {
-    const dropdown = this.shadowRoot?.querySelector(".dropdown");
-
-    if (dropdown) {
-      dropdown.toggleAttribute("data-open", this._open);
-    }
-  }
-
-  render() {
-    const cfg = this._config || {};
-    const hoverLabel = cfg.hoverLabel || "Menu";
-    const items = Array.isArray(cfg.dropdownItems) ? cfg.dropdownItems : [];
-
-    this.shadowRoot.innerHTML = `
-      <style>
-        :host {
-          display: block;
-          font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-        }
-
+var w=Object.defineProperty;var y=(e,t,n)=>t in e?w(e,t,{enumerable:!0,configurable:!0,writable:!0,value:n}):e[t]=n;var u=(e,t,n)=>y(e,typeof t!="symbol"?t+"":t,n);(function(e,t){"use strict";const n=({hoverLabel:l="Menu",buttonText:x="Contact",modalTitle:r="Title",modalBody:s="Content",dropdownItems:o=[]})=>{var c,p;const[a,i]=e.useState(!1),d=(p=(c=window==null?void 0:window.CTI)==null?void 0:c.components)==null?void 0:p.Button_raw,g=e.useCallback(()=>{i(!0)},[]),h=e.useCallback(()=>{i(!1)},[]);return e.createElement("div",{style:b.host},e.createElement("style",null,`
         .wrap {
           position: relative;
           width: 100%;
@@ -116,6 +37,7 @@ class CTIFooterHover extends HTMLElement {
 
         .hoverArea {
           position: relative;
+
         }
 
         .dropdown {
@@ -132,7 +54,9 @@ class CTIFooterHover extends HTMLElement {
           z-index: 50;
         }
 
-        .dropdown[data-open] { display: block; }
+        .dropdown.open { display: block; 
+          top:-5px;
+          transition:0.5s;}
 
         .item {
           display: block;
@@ -142,56 +66,18 @@ class CTIFooterHover extends HTMLElement {
           color: #111827;
           font-weight: 600;
           font-size: 14px;
+          transition: background 0.2s;
         }
         .item:hover { background: rgba(0,0,0,0.06); }
+
+        .empty {
+          opacity: 0.6;
+          cursor: default;
+        }
 
         @media (max-width: 520px) {
           .row { flex-direction: column; align-items: stretch; }
           .btn { width: 100%; text-align: center; }
           .dropdown { left: 0; right: 0; min-width: unset; }
         }
-      </style>
-
-      <div class="wrap">
-        <div class="row">
-          <div class="brand">CTI Footer</div>
-          <div class="hoverArea" id="hoverArea">
-            <button class="btn" id="hoverBtn">${hoverLabel}</button>
-            <div class="dropdown" id="dropdown">
-              ${
-                items.length
-                  ? items
-                      .map(
-                        (x) =>
-                          `<a class="item" href="${x.href || "#"}">${
-                            x.label || "Item"
-                          }</a>`
-                      )
-                      .join("")
-                  : `<div class="item" style="opacity:.6; cursor:default;">No items</div>`
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-    `;
-
-    const hoverArea = this.shadowRoot.querySelector("#hoverArea");
-    const dropdown = this.shadowRoot.querySelector("#dropdown");
-
-    if (hoverArea && dropdown) {
-      hoverArea.addEventListener("mouseenter", () => {
-        this._open = true;
-        this._syncOpenState();
-      });
-      hoverArea.addEventListener("mouseleave", () => {
-        this._open = false;
-        this._syncOpenState();
-      });
-    }
-
-    this._syncOpenState();
-  }
-}
-
-customElements.define("cti-footer-hover", CTIFooterHover);
+      `),e.createElement("div",{className:"wrap"},e.createElement("div",{className:"row"},e.createElement("div",{className:"brand"},"CTI Footer"),e.createElement("div",{className:"hoverArea",onMouseEnter:g,onMouseLeave:h},e.createElement("button",{className:"btn"},l),e.createElement("div",{className:`dropdown ${a?"open":""}`},o.length?o.map((m,v)=>e.createElement("a",{key:v,className:"item",href:m.href||"#"},m.label||"Item")):e.createElement("div",{className:"item empty"},"No items")))),d?e.createElement(d,null):null))},b={host:{display:"block",fontFamily:"system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif"}};class f extends HTMLElement{constructor(){super(...arguments);u(this,"root",null)}connectedCallback(){const r=document.createElement("div");this.appendChild(r);const s=this.getAttribute("data-config"),o=s?JSON.parse(s):{};o.dropdownItems;const a=t.createRoot(r);this.root=a,a.render(e.createElement(n,{hoverLabel:o.hoverLabel||"Menu",buttonText:o.buttonText||"Contact",modalTitle:o.modalTitle||"Title",modalBody:o.modalBody||"Content",dropdownItems:o.dropdownItems||[]}))}disconnectedCallback(){var r;(r=this.root)==null||r.unmount()}}customElements.define("cti-footer-hover",f)})(React,ReactDOMClient);

@@ -7,11 +7,7 @@
       "background": "#ffffff",
       "text": "#111827"
     },
-    "radius": {
-      "sm": "4px",
-      "md": "8px",
-      "lg": "9999px"
-    },
+    "radius": { "sm": "4px", "md": "8px", "lg": "9999px" },
     "spacing": {
       "xs": "4px",
       "sm": "8px",
@@ -22,11 +18,7 @@
   },
   "components": {
     "text": {
-      "base": {
-        "fontSize": "160px",
-        "color": "#111827",
-        "lineHeight": "1.5"
-      }
+      "base": { "fontSize": "160px", "color": "#111827", "lineHeight": "1.5" }
     },
     "Footer": {
       "props": {
@@ -36,22 +28,10 @@
         "modalBody": "Write us at support@examplesssss.com",
         "hoverLabel": "123",
         "dropdownItems": [
-          {
-            "label": "Impressum",
-            "href": "/impressum"
-          },
-          {
-            "label": "Privacy",
-            "href": "/privacy"
-          },
-          {
-            "label": "salam",
-            "href": "/google"
-          },
-          {
-            "label": "a",
-            "href": "/google"
-          }
+          { "label": "Impressum", "href": "/impressum" },
+          { "label": "Privacy", "href": "/privacy" },
+          { "label": "salam", "href": "/google" },
+          { "label": "a", "href": "/google" }
         ]
       }
     },
@@ -63,22 +43,11 @@
         "fontWeight": 600
       },
       "variants": {
-        "primary": {
-          "backgroundColor": "#4f46e5",
-          "color": "#ffffff"
-        },
-        "secondary": {
-          "backgroundColor": "#f97316",
-          "color": "#111827"
-        }
+        "primary": { "backgroundColor": "#4f46e5", "color": "#ffffff" },
+        "secondary": { "backgroundColor": "#f97316", "color": "#111827" }
       }
     },
-    "Header": {
-      "base": {
-        "fontSize": "120px",
-        "color": "red"
-      }
-    },
+    "Header": { "base": { "fontSize": "120px", "color": "red" } },
     "Header1": {
       "className": "text-xl text-primary-100 p-10  mx-10 border rounded-lg bg-red-700 shadow-lg shadow-cyan-500/50 "
     }

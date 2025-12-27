@@ -13,12 +13,12 @@ export interface CSSVariable {
   type: "color" | "dimension" | "string";
 }
 
-export interface ComponentProp {
-  name: string;
-  type: string;
-  default: any;
-  options?: string[];
-}
+// export interface ComponentProp {
+//   name: string;
+//   type: string;
+//   default: any;
+//   options?: string[];
+// }
 
 export type Manifest = {
   version: string;
@@ -36,6 +36,27 @@ export type ComponentRegistry = {
   cssVars?: any[];
 };
 
+type ComponentProp = {
+  name: string
+  type: string
+  default?: string
+}
+
+type CssVar = {
+  name: string;
+  default?: string;
+  type: string;
+};
+
+type ComponentDefinition = {
+  id: string;
+  name: string;
+  bundle: string;
+  version: string;
+  description?: string;
+  props?: ComponentProp[];
+  cssVars?: CssVar[];
+};
 export type ThemeJSON = {
   version: number | string;
   tokens: {
@@ -43,14 +64,27 @@ export type ThemeJSON = {
     spacing: Record<string, string>;
     radius: Record<string, string>;
   };
-  components: {
-    [componentName: string]: {
-      base?: React.CSSProperties;
-      variants?: {
-        [variantName: string]: React.CSSProperties;
-      };
-      className?: string;
-      props?: Record<string, any>;
-    };
-  };
+
+  components: Record<string, ComponentDefinition>;
+  // components: {
+  //   [componentName: string]: {
+  //     base?: React.CSSProperties;
+  //     variants?: {
+  //       [variantName: string]: React.CSSProperties;
+  //     };
+  //     className?: string;
+  //     props?: Record<string, any>;
+  //     bundle?: string;
+  //   };
+  // };
+  // components: {
+  //   [componentName: string]: {
+  //     base?: React.CSSProperties;
+  //     variants?: {
+  //       [variantName: string]: React.CSSProperties;
+  //     };
+  //     className?: string;
+  //     props?: Record<string, any>;
+  //   };
+  // };
 };

@@ -62,7 +62,14 @@ function getCachePath(filePath) {
 // کمک‌کننده: گرفتن فایل از origin و ذخیره در cache (برای refresh)
 async function refreshCacheFile(filePath) {
   const cachePath = getCachePath(filePath);
-  const originUrl = `${ORIGIN}/${filePath}`; // مثلا http://localhost:3001/api/theme.json
+
+  // Mapping برای فایل‌های خاص
+  let originPath = filePath;
+  if (filePath === "site.json") {
+    originPath = "api/site"; // درخواست از /api/site endpoint
+  }
+
+  const originUrl = `${ORIGIN}/${originPath}`; // مثلا http://localhost:3001/api/theme.json
 
   console.log("♻️ Refresh from origin →", originUrl);
 
@@ -234,38 +241,48 @@ app.get("/components/:id", async (req, res) => {
     return res.status(500).json({ error: "Cannot read component" });
   }
 });
-
 app.get("/site", async (req, res) => {
-  // Serve public-facing site JSON (designTokens + minimal registry)
-  const publicPath = path.join(CACHE_DIR, "manifest.public.json");
+  // Serve site.json directly from cache
+  const sitePath = path.join(CACHE_DIR, "site.json");
   try {
-    const content = await fs.readFile(publicPath, "utf-8");
-    const manifest = JSON.parse(content);
-
-    const site = {
-      version: manifest.version,
-      designTokens: manifest.designTokens || {},
-      registry: (manifest.registry || []).map((c) => ({
-        id: c.id,
-        name: c.name,
-        bundle: c.bundle,
-        version: c.version,
-        description: c.description,
-        props: c.props || [],
-        cssVars: c.cssVars || [],
-      })),
-    };
-
+    const content = await fs.readFile(sitePath, "utf-8");
     res.setHeader("Content-Type", "application/json");
     res.setHeader("Cache-Control", "no-cache, must-revalidate");
-    return res.json(site);
+    return res.send(content);
   } catch (err) {
-    console.error("❌ Could not build site JSON:", err.message);
-    return res.status(500).json({ error: "Cannot build site JSON" });
+    // Fallback: build from manifest.public.json if site.json doesn't exist
+    console.warn("⚠️ site.json not found, building from manifest...");
+    const publicPath = path.join(CACHE_DIR, "manifest.public.json");
+    try {
+      const content = await fs.readFile(publicPath, "utf-8");
+      const manifest = JSON.parse(content);
+
+      const site = {
+        version: manifest.version,
+        designTokens: manifest.designTokens || {},
+        components: (manifest.registry || []).reduce((acc, c) => {
+          acc[c.id] = {
+            id: c.id,
+            name: c.name,
+            bundle: c.bundle,
+            version: c.version,
+            description: c.description,
+            props: c.props || [],
+            cssVars: c.cssVars || [],
+          };
+          return acc;
+        }, {}),
+      };
+
+      res.setHeader("Content-Type", "application/json");
+      res.setHeader("Cache-Control", "no-cache, must-revalidate");
+      return res.json(site);
+    } catch (buildErr) {
+      console.error("❌ Could not build site JSON:", buildErr.message);
+      return res.status(500).json({ error: "Cannot build site JSON" });
+    }
   }
 });
-
-// ✅ Versioned theme endpoint - serve theme files with hash
 app.get("/api/theme/:env/:filename", async (req, res) => {
   const { env, filename } = req.params;
   const themePath = path.join(CACHE_DIR, filename);
