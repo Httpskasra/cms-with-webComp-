@@ -53,13 +53,14 @@ export default defineConfig({
   build: {
     lib: {
       entry: {
-        // "cti-footer-modal": resolve(
-        //   __dirname,
-        //   "src/entries/cti-footer-modal.tsx"
-        // ),
+        "cti-footer": resolve(__dirname, "src/entries/cti-footer.tsx"),
         "cti-footer-hover": resolve(
           __dirname,
           "src/entries/cti-footer-hover.tsx"
+        ),
+        "cti-footer-modal": resolve(
+          __dirname,
+          "src/entries/cti-footer-modal.tsx"
         ),
       },
       name: "CTIFooter",

@@ -86,7 +86,7 @@ export async function fetchTheme(): Promise<ThemeJSON> {
             bundle: comp.bundle,
             version: comp.version,
             description: comp.description,
-            props: comp.props || [],
+            // props: comp.props || [],
             cssVars: comp.cssVars || [],
             // Store the actual config data as propsData
             propsData: propsRecord,

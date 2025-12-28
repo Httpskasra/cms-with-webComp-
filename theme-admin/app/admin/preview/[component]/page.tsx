@@ -15,6 +15,15 @@ interface PreviewMessage {
   payload: any;
 }
 
+// Extend window object to include React libraries
+declare global {
+  interface Window {
+    React: any;
+    ReactDOMClient: any;
+    ReactDOM: any;
+  }
+}
+
 export default function PreviewPage() {
   const params = useParams();
   const searchParams = useSearchParams();
@@ -22,15 +31,78 @@ export default function PreviewPage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const webComponentRef = useRef<HTMLElement | null>(null);
 
-  // Parse initial tokens from URL
-  const initialTokens = searchParams.get("tokens")
-    ? JSON.parse(decodeURIComponent(searchParams.get("tokens")!))
-    : {};
+  const renderComponent = (component: any) => {
+    if (!containerRef.current) return;
+
+    // Create the web component element
+    const tagName = componentId
+      .replace(/([a-z])([A-Z])/g, "$1-$2")
+      .toLowerCase();
+
+    // Wait for web component to be defined in customElements registry
+    const waitForWebComponent = (
+      name: string,
+      maxWait: number = 5000
+    ): Promise<void> => {
+      return new Promise((resolve, reject) => {
+        if (customElements.get(name)) {
+          console.log(`✅ Web component '${name}' already registered`);
+          resolve();
+          return;
+        }
+
+        const startTime = Date.now();
+        const checkInterval = setInterval(() => {
+          if (customElements.get(name)) {
+            clearInterval(checkInterval);
+            console.log(`✅ Web component '${name}' registered`);
+            resolve();
+          } else if (Date.now() - startTime > maxWait) {
+            clearInterval(checkInterval);
+            reject(
+              new Error(
+                `Web component '${name}' not registered after ${maxWait}ms`
+              )
+            );
+          }
+        }, 50); // Check every 50ms
+      });
+    };
+
+    waitForWebComponent(tagName)
+      .then(() => {
+        const el = document.createElement(tagName);
+
+        // Set initial props from URL or defaults
+        component.props?.forEach((prop: any) => {
+          const urlValue = searchParams.get(`prop_${prop.name}`);
+          el.setAttribute(prop.name, urlValue || prop.default);
+        });
+
+        webComponentRef.current = el;
+        containerRef.current?.appendChild(el);
+        console.log(`✅ Component rendered: ${tagName}`);
+      })
+      .catch((err) => {
+        console.error(`❌ Failed to render component: ${err.message}`);
+      });
+  };
 
   useEffect(() => {
     // Load Web Component bundle
     const loadComponent = async () => {
       try {
+        console.log(`🚀 Loading component: ${componentId}`);
+
+        // Load React dependencies first if needed
+
+        // Add extra safety check
+        if (!window.React || !window.ReactDOMClient) {
+          throw new Error("React dependencies failed to load");
+        }
+
+        console.log(`✅ React ready, fetching manifest...`);
+
         // Fetch manifest from Virtual CDN
         const cdnUrl = "http://localhost:4000/manifest/admin";
         const response = await fetch(cdnUrl);
@@ -49,16 +121,19 @@ export default function PreviewPage() {
           return;
         }
 
+        console.log(`✅ Component found, loading bundle...`);
+
         // Load the script from CDN
         const bundleUrl = component.bundle.startsWith("http")
           ? component.bundle
           : `http://localhost:4000${component.bundle}`;
         const script = document.createElement("script");
         script.src = bundleUrl;
-        script.async = true;
+        script.async = false; // ✅ Make sure React is fully available before executing
         document.head.appendChild(script);
 
         script.onload = () => {
+          console.log(`✅ Bundle loaded: ${componentId}`);
           renderComponent(component);
         };
 
@@ -72,26 +147,6 @@ export default function PreviewPage() {
 
     loadComponent();
   }, [componentId]);
-
-  const renderComponent = (component: any) => {
-    if (!containerRef.current) return;
-
-    // Create the web component element
-    const tagName = componentId
-      .replace(/([a-z])([A-Z])/g, "$1-$2")
-      .toLowerCase();
-
-    const el = document.createElement(tagName);
-
-    // Set initial props from URL or defaults
-    component.props?.forEach((prop: any) => {
-      const urlValue = searchParams.get(`prop_${prop.name}`);
-      el.setAttribute(prop.name, urlValue || prop.default);
-    });
-
-    webComponentRef.current = el;
-    containerRef.current.appendChild(el);
-  };
 
   // Listen for messages from parent Admin page
   useEffect(() => {
@@ -163,33 +218,6 @@ export default function PreviewPage() {
 
   return (
     <>
-      <style>{`
-        * {
-          margin: 0;
-          padding: 0;
-          box-sizing: border-box;
-        }
-
-        body {
-          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-          background: #f9fafb;
-          padding: 2rem;
-        }
-
-        #preview-container {
-          background: white;
-          border: 1px solid #e5e7eb;
-          border-radius: 0.5rem;
-          padding: 2rem;
-          min-height: 400px;
-          box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Apply initial tokens */
-        ${Object.entries(initialTokens)
-          .map(([varName, value]) => `--${varName}: ${value};`)
-          .join("\n")}
-      `}</style>
       <div id="preview-container" ref={containerRef} />
     </>
   );

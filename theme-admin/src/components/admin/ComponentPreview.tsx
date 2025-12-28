@@ -17,7 +17,7 @@ export default function ComponentPreview({
 }: ComponentPreviewProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [iframeLoaded, setIframeLoaded] = useState(false);
-  
+  // console.log("yoho haha ", component.bundle);
   // Create element tag name from component id (e.g., "cti-footer" -> "cti-footer")
   const tagName = component.id
     .replace(/([a-z])([A-Z])/g, "$1-$2")
@@ -52,7 +52,7 @@ export default function ComponentPreview({
             onLoad={() => setIframeLoaded(true)}
             className="w-full h-96 border-0"
             title={`${component.name} Preview`}
-            sandbox="allow-scripts"
+            sandbox="allow-scripts allow-same-origin"
           />
         </div>
       </div>
