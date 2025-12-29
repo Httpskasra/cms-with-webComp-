@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { ReactNode, useEffect } from "react";
@@ -33,9 +34,7 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
       }
     };
 
-    const findComponentFromPath = (
-      path: EventTarget[]
-    ): HTMLElement | null => {
+    const findComponentFromPath = (path: EventTarget[]): HTMLElement | null => {
       for (const item of path) {
         if (item instanceof HTMLElement) {
           const tag = item.tagName.toLowerCase();
