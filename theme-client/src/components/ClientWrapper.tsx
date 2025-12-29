@@ -82,6 +82,12 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
       if (!isAllowedOrigin(event.origin)) return;
       const data = event.data || {};
 
+      if (data.type === "setWcDev") {
+        const enabled = data.payload?.enabled ?? data.payload ?? true;
+        (window as any).__CTI_WC_DEV__ = Boolean(enabled);
+        return;
+      }
+
       if (data.type === "setCssVars") {
         const cssVars = data.payload?.cssVars ?? data.payload;
         const targets = resolveTargets(data.payload?.componentId);

@@ -96,6 +96,16 @@ export default function SitePreviewAdminPage() {
     targetWindow.postMessage({ type: "setTokens", payload: tokens }, clientOrigin);
   }, [tokens, iframeLoaded, clientOrigin]);
 
+  useEffect(() => {
+    if (!iframeLoaded) return;
+    const targetWindow = iframeRef.current?.contentWindow;
+    if (!targetWindow) return;
+    targetWindow.postMessage(
+      { type: "setWcDev", payload: { enabled: true } },
+      clientOrigin
+    );
+  }, [iframeLoaded, clientOrigin]);
+
   const handleTokensChange = (newTokens: Record<string, any>) => {
     setTokens(newTokens);
   };
