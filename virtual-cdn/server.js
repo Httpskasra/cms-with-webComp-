@@ -90,6 +90,13 @@ const getContentType = (filePath) => {
 };
 
 function getCacheControl(filePath) {
+  const isDev = process.env.NODE_ENV !== "production";
+
+  // ✅ dev: WC و CSS بدون cache
+  if (isDev && (filePath.endsWith(".js") || filePath.endsWith(".css"))) {
+    return "no-store";
+  }
+
   // ✅ فایل‌های config که تغییر می‌کنند
   if (
     filePath.endsWith("theme.json") ||
@@ -369,6 +376,47 @@ app.get("/health", (req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
   });
+});
+
+// 🎨 Override endpoints for development
+// Get component overrides (CSS variables)
+app.get("/overrides/components/:id", async (req, res) => {
+  const id = req.params.id;
+  const file = path.join(CACHE_DIR, `overrides_components_${id}.json`);
+
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    const content = await fs.readFile(file, "utf-8");
+    return res.send(content);
+  } catch {
+    // اگر override نیست، خالی برگردون
+    return res.json({ cssVars: {} });
+  }
+});
+
+// Save component overrides (CSS variables)
+app.post("/overrides/components/:id", async (req, res) => {
+  const id = req.params.id;
+  const file = path.join(CACHE_DIR, `overrides_components_${id}.json`);
+
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    // body: { cssVars: { "--x": "..." } }
+    await ensureCache();
+    await fs.writeFile(file, JSON.stringify(req.body || {}, null, 2), "utf-8");
+
+    console.log(`✅ Override saved for component: ${id}`);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("❌ Override write failed:", err.message);
+    return res.status(500).json({ ok: false, error: err.message });
+  }
 });
 
 app.listen(PORT, () =>

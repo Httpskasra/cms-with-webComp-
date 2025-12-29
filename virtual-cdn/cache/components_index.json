@@ -68,6 +68,22 @@
           "type": "string"
         }
       ]
+    },
+    {
+      "id": "cti-info-card",
+      "name": "CTI Info Card",
+      "version": "1.0.0",
+      "description": "Info card component with optional CTA",
+      "adminOnly": false,
+      "bundle": "http://localhost:4000/cdn/wc/cti-info-card.js",
+      "props": [
+        {
+          "name": "data-config",
+          "type": "string",
+          "default": "{}"
+        }
+      ],
+      "cssVars": []
     }
   ]
 }

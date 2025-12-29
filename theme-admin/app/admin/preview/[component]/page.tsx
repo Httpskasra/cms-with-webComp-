@@ -11,7 +11,12 @@ import { useEffect, useRef } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 
 interface PreviewMessage {
-  type: "setProps" | "setTokens" | "getComputedStyles" | "exportTheme";
+  type:
+    | "setProps"
+    | "setTokens"
+    | "setCssVars"
+    | "getComputedStyles"
+    | "exportTheme";
   payload: any;
 }
 
@@ -72,6 +77,9 @@ export default function PreviewPage() {
     waitForWebComponent(tagName)
       .then(() => {
         const el = document.createElement(tagName);
+        if (componentId === "cti-info-card") {
+          el.setAttribute("data-inspector", "1");
+        }
 
         // Set initial props from URL or defaults
         component.props?.forEach((prop: any) => {
@@ -156,14 +164,41 @@ export default function PreviewPage() {
       const { type, payload } = event.data;
 
       switch (type) {
-        case "setProps":
+        case "setProps": {
           // Update Web Component props
-          if (webComponentRef.current && payload) {
-            Object.entries(payload).forEach(([key, value]) => {
+          const propsPayload = payload?.props ?? payload;
+          if (webComponentRef.current && propsPayload) {
+            Object.entries(propsPayload).forEach(([key, value]) => {
               webComponentRef.current?.setAttribute(key, String(value));
             });
           }
           break;
+        }
+
+        case "setCssVars": {
+          // Update CSS custom properties on the web component element
+          const cssVars = payload?.cssVars ?? payload;
+          const targetId = payload?.componentId;
+          if (
+            webComponentRef.current &&
+            cssVars &&
+            (!targetId ||
+              webComponentRef.current.tagName.toLowerCase() ===
+                String(targetId).toLowerCase())
+          ) {
+            Object.entries(cssVars).forEach(([varName, value]) => {
+              if (value === "" || value == null) {
+                webComponentRef.current?.style.removeProperty(varName);
+              } else {
+                webComponentRef.current?.style.setProperty(
+                  varName,
+                  String(value)
+                );
+              }
+            });
+          }
+          break;
+        }
 
         case "setTokens":
           // Update CSS custom properties

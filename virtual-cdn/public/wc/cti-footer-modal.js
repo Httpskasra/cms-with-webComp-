@@ -1,81 +1,4 @@
-class CTIFooterModal extends HTMLElement {
-  constructor() {
-    super();
-    this._config = null;
-    this._open = false;
-
-    this.attachShadow({ mode: "open" });
-    this._onDocClick = this._onDocClick.bind(this);
-  }
-
-  set config(value) {
-    this._config = value;
-    this.render();
-  }
-
-  get config() {
-    return this._config;
-  }
-
-  connectedCallback() {
-    if (this.hasOwnProperty("config")) {
-      const value = this.config;
-      delete this.config;
-      this.config = value;
-    }
-
-    const raw = this.getAttribute("data-config");
-    if (raw && !this._config) {
-      try {
-        this._config = JSON.parse(raw);
-      } catch (e) {}
-    }
-
-    this.render();
-    document.addEventListener("click", this._onDocClick);
-  }
-
-  disconnectedCallback() {
-    document.removeEventListener("click", this._onDocClick);
-  }
-
-  _onDocClick(e) {
-    if (!this.shadowRoot) return;
-    const path = e.composedPath?.() || [];
-    if (!path.includes(this)) {
-      this._open = false;
-      this._syncOpenState();
-    }
-  }
-
-  _toggleOpen() {
-    this._open = !this._open;
-    this._syncOpenState();
-  }
-
-  _close() {
-    this._open = false;
-    this._syncOpenState();
-  }
-
-  _syncOpenState() {
-    const modal = this.shadowRoot?.querySelector(".modal");
-    const overlay = this.shadowRoot?.querySelector(".overlay");
-
-    if (modal && overlay) {
-      overlay.toggleAttribute("data-open", this._open);
-      modal.toggleAttribute("data-open", this._open);
-    }
-  }
-
-  render() {
-    const cfg = this._config || {};
-    const buttonText = cfg.buttonText || "Open";
-    const modalTitle = cfg.modalTitle || "Title";
-    const modalBody = cfg.modalBody || "Content";
-
-    this.shadowRoot.innerHTML = `
-      <style>
+var w=Object.defineProperty;var C=(e,t,r)=>t in e?w(e,t,{enumerable:!0,configurable:!0,writable:!0,value:r}):e[t]=r;var g=(e,t,r)=>C(e,typeof t!="symbol"?t+"":t,r);(function(e,t){"use strict";const r=({buttonText:d="Open",modalTitle:i="Title",modalBody:s="Content"})=>{var b,f;const[a,o]=e.useState(!1),n=(f=(b=window==null?void 0:window.CTI)==null?void 0:b.components)==null?void 0:f.TitleComp,p=e.useCallback(()=>{o(m=>!m)},[]),l=e.useCallback(()=>{o(!1)},[]),c=e.useCallback(()=>{l()},[l]),y=m=>{const h={"&":"&amp;","<":"&lt;",">":"&gt;"};return String(m??"").replace(/[&<>]/g,v=>h[v])};return e.createElement("div",{className:"cti-footer-modal"},e.createElement("style",null,`
         :host {
           display: block;
           font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
@@ -124,7 +47,7 @@ class CTIFooterModal extends HTMLElement {
           display: none;
           z-index: 60;
         }
-        .overlay[data-open] { display: block; }
+        .overlay.open { display: block; }
 
         .modal {
           position: fixed;
@@ -140,7 +63,7 @@ class CTIFooterModal extends HTMLElement {
           display: none;
           z-index: 61;
         }
-        .modal[data-open] { display: block; }
+        .modal.open { display: block; }
 
         .modalTop {
           display: flex;
@@ -178,42 +101,4 @@ class CTIFooterModal extends HTMLElement {
           .row { flex-direction: column; align-items: stretch; }
           .btn { width: 100%; text-align: center; }
         }
-      </style>
-
-      <div class="wrap">
-        <div class="row">
-          <div class="brand">CTI Footer</div>
-          <button class="btn" id="openBtn">${buttonText}</button>
-        </div>
-      </div>
-
-      <div class="overlay" id="overlay"></div>
-      <div class="modal" id="modal">
-        <div class="modalTop">
-          <div class="title">${modalTitle}</div>
-          <button class="close" id="closeBtn">Close</button>
-        </div>
-        <div class="body">${this._escapeHtml(modalBody)}</div>
-      </div>
-    `;
-
-    const openBtn = this.shadowRoot.querySelector("#openBtn");
-    const overlay = this.shadowRoot.querySelector("#overlay");
-    const closeBtn = this.shadowRoot.querySelector("#closeBtn");
-
-    if (openBtn) openBtn.addEventListener("click", () => this._toggleOpen());
-    if (overlay) overlay.addEventListener("click", () => this._close());
-    if (closeBtn) closeBtn.addEventListener("click", () => this._close());
-
-    this._syncOpenState();
-  }
-
-  _escapeHtml(str) {
-    return String(str ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;");
-  }
-}
-
-customElements.define("cti-footer-modal", CTIFooterModal);
+      `),e.createElement("div",{className:"wrap"},e.createElement("div",{className:"row"},n?e.createElement(n,null):null,e.createElement("div",{className:"brand"},"CTI Footer"),e.createElement("button",{className:"btn",onClick:p},d))),e.createElement("div",{className:`overlay ${a?"open":""}`,onClick:c}),e.createElement("div",{className:`modal ${a?"open":""}`},e.createElement("div",{className:"modalTop"},e.createElement("div",{className:"title"},i),e.createElement("button",{className:"close",onClick:l},"Close")),e.createElement("div",{className:"body",dangerouslySetInnerHTML:{__html:y(s)}})))};async function u(d,i){if(typeof process<"u")return;const a=`${globalThis.__CTI_CDN_URL__||"http://localhost:4000"}/overrides/components/${d}.json`;try{const o=await fetch(a,{cache:"no-store"});if(!o.ok)return;const n=await o.json(),p=(n==null?void 0:n.cssVars)||{};for(const[l,c]of Object.entries(p))l.startsWith("--")&&(c===""||c==null?i.style.removeProperty(l):i.style.setProperty(l,String(c)))}catch{}}class x extends HTMLElement{constructor(){super(...arguments);g(this,"root",null)}async connectedCallback(){const s=document.createElement("div");this.appendChild(s);const a=this.getAttribute("data-config"),o=a?JSON.parse(a):{},n=t.createRoot(s);this.root=n,n.render(e.createElement(r,{buttonText:o.buttonText||"Open",modalTitle:o.modalTitle||"Title",modalBody:o.modalBody||"Content"})),await u("cti-footer-modal",this)}disconnectedCallback(){var s;(s=this.root)==null||s.unmount()}}customElements.define("cti-footer-modal",x)})(React,ReactDOMClient);

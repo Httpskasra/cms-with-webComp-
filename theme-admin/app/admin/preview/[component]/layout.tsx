@@ -14,6 +14,7 @@ export default function previewLayout({
   if (typeof window !== "undefined") {
     (window as any).React = React;
     (window as any).ReactDOMClient = ReactDOMClient;
+    (window as any).__CTI_WC_DEV__ = true;
   }
   return <>{children}</>;
 }

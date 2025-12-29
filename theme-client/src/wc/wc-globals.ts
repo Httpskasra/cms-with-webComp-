@@ -9,11 +9,16 @@ declare global {
     React?: any;
     ReactDOMClient?: any;
     CTI?: { components?: Record<string, any> };
+    __CTI_CDN_URL__?: string;
   }
 }
 
 export async function initWCGlobals() {
   if (typeof window === "undefined") return;
+
+  // Set CDN base URL for dev overrides
+  (window as any).__CTI_CDN_URL__ =
+    process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000";
 
   // react-dom/client را اینجا lazy-load کن تا SSR هیچوقت نخورد
   const ReactDOMClient = await import("react-dom/client");

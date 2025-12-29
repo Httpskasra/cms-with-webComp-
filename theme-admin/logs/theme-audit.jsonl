@@ -1,1 +1,2 @@
 {"versionId":"v20251227101252_eebecd19","author":"admin","componentId":"cti-footer","tokens":{"--footer-bg":"#fffffs"},"description":"Theme update for CTI Footer","env":"dev","timestamp":"2025-12-27T10:12:52.673Z"}
+{"versionId":"v20251229055626_79cdc991","author":"admin","componentId":"cti-footer-hover","tokens":{"--hover-bg":"#f4f0f0"},"description":"Theme update for CTI Footer Hover","env":"dev","timestamp":"2025-12-29T05:56:26.826Z"}

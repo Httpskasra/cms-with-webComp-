@@ -42,6 +42,13 @@ export default function ComponentsPage() {
           <p className="text-lg text-slate-600">
             Edit, preview, and publish Web Components with live styling updates.
           </p>
+          <div className="mt-6">
+            <Link
+              href="/admin/site-preview"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition">
+              Open Live Site Inspector
+            </Link>
+          </div>
         </div>
 
         {/* Search */}

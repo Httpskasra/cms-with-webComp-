@@ -1,0 +1,21 @@
+{
+  "vendor": {
+    "react": "/vendor/react18.umd.js",
+    "reactDom": "/vendor/react-dom18.umd.js",
+    "reactDomClientShim": "/vendor/react-dom-client-shim.js"
+  },
+  "components": {
+    "cti-footer-hover": {
+      "tag": "cti-footer-hover",
+      "script": "/wc/cti-footer-hover.js"
+    },
+    "cti-footer": {
+      "tag": "cti-footer",
+      "script": "/wc/cti-footer.js"
+    },
+    "cti-footer-modal": {
+      "tag": "cti-footer-modal",
+      "script": "/wc/cti-footer-modal.js"
+    }
+  }
+}

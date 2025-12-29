@@ -14,18 +14,18 @@ export function getComponentStyle(
   const comp = theme.components[component];
   if (!comp) return {};
 
-  const base = comp.base ?? {};
-  const variantStyle =
-    variant && comp.variants && comp.variants[variant]
-      ? comp.variants[variant]
-      : {};
-  const className = comp.className || "";
+  // const base = comp.base ?? {};
+  // const variantStyle =
+  //   variant && comp.variants && comp.variants[variant]
+  //     ? comp.variants[variant]
+  //     : {};
+  // const className = comp.className || "";
   // console.log("asdadas", comp);
   // console.log("asdad111111111111as", className);
   //   console.log(base, variantStyle);
   return {
-    base,
-    variantStyle,
-    className,
+    // base,
+    // variantStyle,
+    // className,
   };
 }

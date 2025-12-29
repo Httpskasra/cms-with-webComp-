@@ -1,6 +1,7 @@
 import { FooterWidget } from "@/components/Footer";
 import { Button } from "../components/Button";
 import { Header } from "@/components/Header";
+import { Info } from "@/components/Info";
 
 export default function Home() {
   return (
@@ -13,6 +14,7 @@ export default function Home() {
           Secondary from CDN
         </Button>
         <Header />
+        <Info />
         <FooterWidget />
       </main>
     </>

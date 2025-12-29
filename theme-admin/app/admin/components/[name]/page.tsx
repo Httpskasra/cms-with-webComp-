@@ -1,11 +1,12 @@
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams } from "next/navigation";
 import { ComponentRegistry, getComponentById } from "@/src/lib/manifestClient";
 import ComponentPreview from "@/src/components/admin/ComponentPreview";
 import TokenEditor from "@/src/components/admin/TokenEditor";
+import CSSVarsEditor from "@/src/components/admin/CSSVarsEditor";
 import ComponentDocs from "@/src/components/admin/ComponentDocs";
 import PublishTheme from "@/src/components/admin/PublishTheme";
 
@@ -14,6 +15,7 @@ type TabType = "preview" | "props" | "tokens" | "overrides" | "docs";
 export default function ComponentEditorPage() {
   const params = useParams();
   const componentId = params.name as string;
+  const iframeRef = useRef<HTMLIFrameElement>(null);
 
   const [component, setComponent] = useState<ComponentRegistry | null>(null);
   const [loading, setLoading] = useState(true);
@@ -22,6 +24,7 @@ export default function ComponentEditorPage() {
   const [tokens, setTokens] = useState<Record<string, any>>({});
   const [props, setProps] = useState<Record<string, any>>({});
   const [hasChanges, setHasChanges] = useState(false);
+  const [iframeLoaded, setIframeLoaded] = useState(false);
 
   useEffect(() => {
     getComponentById(componentId, true)
@@ -103,7 +106,11 @@ export default function ComponentEditorPage() {
         {/* Content */}
         <div className="bg-white rounded-b-lg shadow-md p-8">
           {activeTab === "preview" && (
-            <ComponentPreview component={component} props={props} />
+            <ComponentPreview
+              ref={iframeRef}
+              component={component}
+              props={props}
+            />
           )}
 
           {activeTab === "props" && (
@@ -165,12 +172,26 @@ export default function ComponentEditorPage() {
             </div>
           )}
 
-          {activeTab === "overrides" && (
-            <div className="text-center py-12 text-slate-500">
-              <p className="mb-4 text-lg">CSS overrides editor coming soon</p>
-              <p className="text-sm">
-                Allow component-specific CSS customization
-              </p>
+          {activeTab === "overrides" && component && (
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="lg:col-span-2">
+                <h2 className="text-xl font-bold mb-4">CSS Variables</h2>
+                <CSSVarsEditor
+                  component={component}
+                  iframeWindow={iframeRef.current?.contentWindow || null}
+                />
+              </div>
+              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 h-fit">
+                <h3 className="font-semibold text-blue-900 mb-2">ℹ️ About</h3>
+                <p className="text-sm text-blue-800">
+                  Edit CSS custom properties in development. Changes are saved
+                  to the virtual CDN and applied in real-time to all pages.
+                </p>
+                <p className="text-xs text-blue-700 mt-3 italic">
+                  These overrides only work in development mode. In production,
+                  only the published theme applies.
+                </p>
+              </div>
             </div>
           )}
 

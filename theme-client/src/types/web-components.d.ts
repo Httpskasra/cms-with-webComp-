@@ -8,9 +8,16 @@ declare global {
         React.HTMLAttributes<HTMLElement>,
         HTMLElement
       > & {
-        // اگر property خاصی مثل config داری، می‌تونی اینجا هم تایپش بدی:
         // config?: any;
       };
+      "cti-footer-hover": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
+      "cti-footer-modal": React.DetailedHTMLProps<
+        React.HTMLAttributes<HTMLElement>,
+        HTMLElement
+      >;
     }
   }
 }

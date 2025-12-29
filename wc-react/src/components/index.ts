@@ -5,3 +5,4 @@ export { CTIFooterHover } from "./CTIFooterHover";
 
 export type { CTIFooterModalProps } from "./CTIFooterModal";
 export type { CTIFooterHoverProps } from "./CTIFooterHover";
+export type { CTIInfoCardProps } from "./CTIInfoCard";

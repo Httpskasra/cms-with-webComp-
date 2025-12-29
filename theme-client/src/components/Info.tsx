@@ -7,7 +7,6 @@
 
 import React, { useEffect, useRef } from "react";
 import { useTheme } from "../contexts/ThemeContext";
-import { getComponentById } from "../lib/manifestClient";
 
 function loadOnce(src: string) {
   if (document.querySelector(`script[data-wc="${src}"]`)) return;
@@ -19,7 +18,7 @@ function loadOnce(src: string) {
   document.body.appendChild(s);
 }
 
-export function FooterWidget() {
+export function Info() {
   const theme = useTheme();
   const ref = useRef<any>(null);
 
@@ -28,23 +27,22 @@ export function FooterWidget() {
 
     async function loadBundle() {
       try {
-        const bundle = theme?.components?.footer?.bundle;
+        const bundle = `${
+          process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000"
+        }/wc/cti-info-card.js`;
         if (bundle) {
           if (!cancelled) loadOnce(bundle);
           return;
         }
 
-        const comp = await getComponentById("footer");
-        const fallbackBundle =
-          comp?.bundle ||
-          `${process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000"}/wc/${
-            comp?.id
-          }.js`;
+        const fallbackBundle = `${
+          process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000"
+        }/wc/cti-info-card.js`;
         if (!cancelled) loadOnce(fallbackBundle);
       } catch {
         const fallback = `${
           process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000"
-        }/wc/cti-footer-hover.js`;
+        }/wc/cti-info-card.js`;
         if (!cancelled) loadOnce(fallback);
       }
     }
@@ -55,18 +53,24 @@ export function FooterWidget() {
     };
   }, [theme?.components?.footer]);
 
-  useEffect(() => {
-    if (!ref.current || !theme?.components?.footer) return;
+  //   useEffect(() => {
+  //     if (!ref.current || !theme?.components?.footer) return;
 
-    const footerComponent = theme.components.footer as any;
-    const cfg = footerComponent.propsData || {};
-    ref.current.setAttribute("data-config", JSON.stringify(cfg));
-  }, [theme?.components?.footer]);
+  //     const footerComponent = theme.components.footer as any;
+  //     const cfg = footerComponent.propsData || {};
+  //     ref.current.setAttribute("data-config", JSON.stringify(cfg));
+  //   }, [theme?.components?.footer]);
 
   if (!theme?.components?.footer?.id) return null; // ⚠️ مهم برای جلوگیری از crash
 
-  const element = `${theme.components.footer.id}`;
-  return React.createElement(element, { ref });
+  const element = `cti-info-card`;
+
+  const isDev = process.env.NODE_ENV === "development"; // در next dev = true، در next start = false
+
+  return React.createElement(element, {
+    ref,
+    ...(isDev ? { "data-inspector": "1" } : {}),
+  });
 }
 
 // "use client";
