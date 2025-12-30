@@ -365,7 +365,7 @@ function DevInspector({
           <div style={{ marginBottom: "12px" }}>
             <label>Card Background</label>
             <input
-              type="color"
+              type="text"
               value={
                 (value.styles?.card?.backgroundColor as string) || "#ffffff"
               }
@@ -379,7 +379,7 @@ function DevInspector({
             <div>
               <label>Title Color</label>
               <input
-                type="color"
+                type="text"
                 value={(value.styles?.title?.color as string) || "#111827"}
                 onChange={(e) => updateStyle("title", "color", e.target.value)}
               />
@@ -387,7 +387,7 @@ function DevInspector({
             <div>
               <label>Subtitle Color</label>
               <input
-                type="color"
+                type="text"
                 value={(value.styles?.subtitle?.color as string) || "#6b7280"}
                 onChange={(e) =>
                   updateStyle("subtitle", "color", e.target.value)
@@ -399,7 +399,7 @@ function DevInspector({
           <div style={{ marginBottom: "12px" }}>
             <label>Description Color</label>
             <input
-              type="color"
+              type="text"
               value={(value.styles?.description?.color as string) || "#4b5563"}
               onChange={(e) =>
                 updateStyle("description", "color", e.target.value)
@@ -411,7 +411,7 @@ function DevInspector({
             <div>
               <label>Primary Button Background</label>
               <input
-                type="color"
+                type="text"
                 value={
                   (value.styles?.primaryButton?.backgroundColor as string) ||
                   "#3b82f6"
@@ -428,7 +428,7 @@ function DevInspector({
             <div>
               <label>Primary Button Text Color</label>
               <input
-                type="color"
+                type="text"
                 value={
                   (value.styles?.primaryButton?.color as string) || "#ffffff"
                 }
@@ -443,7 +443,7 @@ function DevInspector({
             <div>
               <label>Secondary Button Background</label>
               <input
-                type="color"
+                type="text"
                 value={
                   (value.styles?.secondaryButton?.backgroundColor as string) ||
                   "#e5e7eb"
@@ -460,7 +460,7 @@ function DevInspector({
             <div>
               <label>Secondary Button Text Color</label>
               <input
-                type="color"
+                type="text"
                 value={
                   (value.styles?.secondaryButton?.color as string) || "#111827"
                 }
@@ -613,30 +613,17 @@ function DynamicCardWithInspector({
         new CustomEvent("cti:config-change", { detail: next, bubbles: true })
       );
 
-      // ارسال تغییرات به CDN
-      try {
-        const cdnUrl =
-          (globalThis as any).__CTI_CDN_URL__ || "http://localhost:4000";
+      // ارسال پیام به parent window (برای site-preview)
+      // ادمین این پیام را دریافت می‌کند و API call به CDN را انجام می‌دهد
+      if (window.parent && window.parent !== window) {
         const componentId = hostEl.tagName.toLowerCase();
-
-        await fetch(`${cdnUrl}/config/components/${componentId}`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ config: next }),
-        });
-
-        // ارسال پیام به parent window (برای site-preview)
-        if (window.parent && window.parent !== window) {
-          window.parent.postMessage(
-            {
-              type: "configChanged",
-              payload: { componentId, config: next },
-            },
-            "*"
-          );
-        }
-      } catch (err) {
-        console.warn("Failed to save config to CDN:", err);
+        window.parent.postMessage(
+          {
+            type: "configChanged",
+            payload: { componentId, config: next },
+          },
+          "*"
+        );
       }
     }
   };

@@ -161,13 +161,27 @@ export default function SitePreviewAdminPage() {
   useEffect(() => {
     if (!iframeLoaded) return;
 
-    const handleConfigChange = (event: MessageEvent) => {
+    const handleConfigChange = async (event: MessageEvent) => {
       if (event.origin !== clientOrigin) return;
       const data = event.data || {};
       if (data.type === "configChanged") {
         const { componentId, config } = data.payload || {};
         if (componentId === selectedComponentId && config) {
           setComponentConfig(config);
+
+          // ارسال تغییرات به CDN از طریق ادمین
+          try {
+            const cdnUrl =
+              process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000";
+            await fetch(`${cdnUrl}/config/components/${componentId}`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ config }),
+            });
+            console.log(`✅ Config saved to CDN for component: ${componentId}`);
+          } catch (err) {
+            console.error("❌ Failed to save config to CDN:", err);
+          }
         }
       }
     };

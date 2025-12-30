@@ -1,9 +1,20 @@
 {
   "config": {
-    "title": "123123",
-    "subtitle": "123123",
-    "description": "12312312",
+    "title": "1231",
+    "subtitle": "kasra",
+    "description": "aaaaaaaaa",
     "primaryButtonText": "sssss",
-    "secondaryButtonHref": "sss"
+    "secondaryButtonHref": "https://google.com",
+    "styles": {
+      "card": {
+        "backgroundColor": "#121"
+      },
+      "title": {
+        "color": "#2222"
+      }
+    },
+    "badge": "new",
+    "imageAlt": "",
+    "primaryButtonHref": "https://google.com"
   }
 }
