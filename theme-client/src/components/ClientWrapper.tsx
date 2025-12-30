@@ -3,11 +3,8 @@
 
 import { ReactNode, useEffect } from "react";
 import { initWCGlobals } from "@/wc/wc-globals";
-import { useClientBroadcast } from "@/src/lib/broadcastChannel";
 
 export function ClientWrapper({ children }: { children: ReactNode }) {
-  const { subscribe } = useClientBroadcast();
-
   useEffect(() => {
     initWCGlobals();
   }, []);
@@ -80,8 +77,10 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
       );
     };
 
-    // Handler function for processing admin messages
-    const processAdminMessage = (data: any) => {
+    const handleMessage = (event: MessageEvent) => {
+      if (!isAllowedOrigin(event.origin)) return;
+      const data = event.data || {};
+
       if (data.type === "setWcDev") {
         const enabled = data.payload?.enabled ?? data.payload ?? true;
         (window as any).__CTI_WC_DEV__ = Boolean(enabled);
@@ -114,6 +113,23 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
         });
       }
 
+      if (data.type === "setConfig") {
+        const config = data.payload?.config ?? data.payload;
+        const targets = resolveTargets(data.payload?.componentId);
+        if (targets.length === 0 || !config) return;
+
+        targets.forEach((target) => {
+          target.setAttribute("data-config", JSON.stringify(config));
+          // Trigger custom event to notify component
+          target.dispatchEvent(
+            new CustomEvent("cti:config-change", {
+              detail: config,
+              bubbles: true,
+            })
+          );
+        });
+      }
+
       if (data.type === "setTokens") {
         const tokens = data.payload || {};
         const root = document.documentElement;
@@ -121,18 +137,6 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
           root.style.setProperty(varName, String(value));
         });
       }
-    };
-
-    // Listen to BroadcastChannel (works even without iframe)
-    const unsubscribeBroadcast = subscribe("*", (messageData: any) => {
-      processAdminMessage(messageData);
-    });
-
-    // Also listen to postMessage for iframe compatibility (fallback)
-    const handleMessage = (event: MessageEvent) => {
-      if (!isAllowedOrigin(event.origin)) return;
-      const data = event.data || {};
-      processAdminMessage(data);
     };
 
     const styleEl = document.createElement("style");
@@ -147,10 +151,9 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
     return () => {
       document.removeEventListener("click", handleClick, true);
       window.removeEventListener("message", handleMessage);
-      unsubscribeBroadcast();
       styleEl.remove();
     };
-  }, [subscribe]);
+  }, []);
 
   return children;
 }

@@ -115,7 +115,11 @@ export default defineConfig(({ mode }) => {
           //   __dirname,
           //   "src/entries/cti-footer-modal.tsx"
           // ),
-          "cti-info-card": resolve(__dirname, "src/entries/cti-info-card.tsx"),
+          // "cti-info-card": resolve(__dirname, "src/entries/cti-info-card.tsx"),
+          "cti-dynamic-card": resolve(
+            __dirname,
+            "src/entries/cti-dynamic-card.tsx"
+          ),
         },
         name: "CTIWebComponents",
         formats: ["iife"],

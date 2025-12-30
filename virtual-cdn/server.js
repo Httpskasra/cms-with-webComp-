@@ -419,6 +419,46 @@ app.post("/overrides/components/:id", async (req, res) => {
   }
 });
 
+// Get component config (data-config for web components)
+app.get("/config/components/:id", async (req, res) => {
+  const id = req.params.id;
+  const file = path.join(CACHE_DIR, `config_components_${id}.json`);
+
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    const content = await fs.readFile(file, "utf-8");
+    return res.send(content);
+  } catch {
+    // اگر config نیست، خالی برگردون
+    return res.json({ config: {} });
+  }
+});
+
+// Save component config (data-config for web components)
+app.post("/config/components/:id", async (req, res) => {
+  const id = req.params.id;
+  const file = path.join(CACHE_DIR, `config_components_${id}.json`);
+
+  res.setHeader("Content-Type", "application/json");
+  res.setHeader("Cache-Control", "no-store");
+  res.setHeader("Access-Control-Allow-Origin", "*");
+
+  try {
+    // body: { config: { title: "...", description: "..." } }
+    await ensureCache();
+    await fs.writeFile(file, JSON.stringify(req.body || {}, null, 2), "utf-8");
+
+    console.log(`✅ Config saved for component: ${id}`);
+    return res.json({ ok: true });
+  } catch (err) {
+    console.error("❌ Config write failed:", err.message);
+    return res.status(500).json({ ok: false, error: err.message });
+  }
+});
+
 app.listen(PORT, () =>
   console.log(
     `🚀 Virtual CDN running → http://localhost:${PORT}/cdn/\n📋 Manifest (Public) → http://localhost:${PORT}/manifest/public\n🔐 Manifest (Admin) → http://localhost:${PORT}/manifest/admin\n✅ Health → http://localhost:${PORT}/health`

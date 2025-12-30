@@ -4,7 +4,6 @@
 
 import { useEffect, useState } from "react";
 import { ComponentRegistry } from "@/src/lib/manifestClient";
-import { useAdminBroadcast } from "@/src/lib/broadcastChannel";
 
 interface CSSVarsEditorProps {
   component: ComponentRegistry;
@@ -23,7 +22,6 @@ export default function CSSVarsEditor({
     text: string;
   } | null>(null);
 
-  const { sendMessage } = useAdminBroadcast();
   const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000";
 
   // Load current overrides on mount
@@ -47,28 +45,10 @@ export default function CSSVarsEditor({
   }, [component.id, cdnUrl]);
 
   const handleVarChange = (varName: string, value: string) => {
-    const newCssVars = {
-      ...cssVars,
+    setCssVars((prev) => ({
+      ...prev,
       [varName]: value,
-    };
-    setCssVars(newCssVars);
-
-    // Send live updates via BroadcastChannel (real-time preview)
-    sendMessage("setCssVars", {
-      componentId: component.id,
-      cssVars: newCssVars,
-    });
-
-    // Also send via postMessage for iframe compatibility (fallback)
-    if (iframeWindow) {
-      iframeWindow.postMessage(
-        {
-          type: "setCssVars",
-          payload: { componentId: component.id, cssVars: newCssVars },
-        },
-        "*"
-      );
-    }
+    }));
   };
 
   const handleReset = async () => {
@@ -90,10 +70,7 @@ export default function CSSVarsEditor({
       setCssVars({});
       setMessage({ type: "success", text: "✅ Overrides cleared" });
 
-      // Send via BroadcastChannel (works for all tabs/windows)
-      sendMessage("setCssVars", { componentId: component.id, cssVars: {} });
-
-      // Also send via postMessage for iframe compatibility (fallback)
+      // Notify iframe to refresh
       if (iframeWindow) {
         iframeWindow.postMessage(
           {
@@ -131,10 +108,7 @@ export default function CSSVarsEditor({
 
       setMessage({ type: "success", text: "✅ CSS variables saved" });
 
-      // Send via BroadcastChannel (works for all tabs/windows)
-      sendMessage("setCssVars", { componentId: component.id, cssVars });
-
-      // Also send via postMessage for iframe compatibility (fallback)
+      // Notify iframe to update CSS vars without refresh
       if (iframeWindow) {
         iframeWindow.postMessage(
           {
@@ -200,17 +174,19 @@ export default function CSSVarsEditor({
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {componentCssVars.map((cssVar) => {
           const varName = typeof cssVar === "string" ? cssVar : cssVar.name;
-          const varValue = cssVars[varName] || "";
+          const varValue = cssVars[varName as keyof typeof cssVars] || "";
           const varDesc =
-            typeof cssVar === "string" ? "" : cssVar.description || "";
+            typeof cssVar === "object" && "description" in cssVar
+              ? cssVar.description || ""
+              : "";
 
           return (
             <div
-              key={varName}
+              key={typeof varName === 'string' ? varName : JSON.stringify(varName)}
               className="p-3 bg-slate-50 border border-slate-200 rounded-lg space-y-2">
               <div className="flex items-baseline justify-between">
                 <label className="text-sm font-mono text-slate-700">
-                  {varName}
+                  {String(varName)}
                 </label>
                 {varDesc && (
                   <span className="text-xs text-slate-500 italic">
@@ -221,7 +197,7 @@ export default function CSSVarsEditor({
               <input
                 type="text"
                 placeholder={`e.g. #f3f4f6 or 16px`}
-                value={varValue}
+                value={typeof varValue === 'string' ? varValue : ""}
                 onChange={(e) => handleVarChange(varName, e.target.value)}
                 className="w-full px-3 py-2 border border-slate-300 rounded text-sm font-mono focus:outline-none focus:ring-2 focus:ring-blue-500"
               />

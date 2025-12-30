@@ -10,7 +10,6 @@ import TokenEditor from "@/src/components/admin/TokenEditor";
 import CSSVarsEditor from "@/src/components/admin/CSSVarsEditor";
 import ComponentDocs from "@/src/components/admin/ComponentDocs";
 import PublishTheme from "@/src/components/admin/PublishTheme";
-import { useAdminBroadcast } from "@/src/lib/broadcastChannel";
 
 type TabType = "props" | "tokens" | "overrides" | "docs";
 
@@ -28,8 +27,6 @@ export default function SitePreviewAdminPage() {
   const [props, setProps] = useState<Record<string, any>>({});
   const [tokens, setTokens] = useState<Record<string, any>>({});
 
-  const { sendMessage } = useAdminBroadcast();
-
   const clientUrl =
     process.env.NEXT_PUBLIC_CLIENT_URL || "http://localhost:3000";
   const clientOrigin = useMemo(() => new URL(clientUrl).origin, [clientUrl]);
@@ -45,6 +42,10 @@ export default function SitePreviewAdminPage() {
     return url.toString();
   }, [clientUrl, mounted]);
 
+  const [componentConfig, setComponentConfig] = useState<Record<string, any>>(
+    {}
+  );
+
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       if (event.origin !== clientOrigin) return;
@@ -54,7 +55,27 @@ export default function SitePreviewAdminPage() {
       if (typeof nextId !== "string") return;
       setSelectedComponentId(nextId);
       setActiveTab("overrides");
+
+      // Load config from CDN
+      const loadConfig = async () => {
+        try {
+          const cdnUrl =
+            process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000";
+          const res = await fetch(`${cdnUrl}/config/components/${nextId}`, {
+            cache: "no-store",
+          });
+          const data = await res.json();
+          setComponentConfig(data?.config || {});
+        } catch (err) {
+          console.error("Failed to load config:", err);
+          setComponentConfig({});
+        }
+      };
+      loadConfig();
     };
+
+    window.addEventListener("message", handleMessage);
+    return () => window.removeEventListener("message", handleMessage);
   }, [clientOrigin]);
 
   useEffect(() => {
@@ -85,57 +106,75 @@ export default function SitePreviewAdminPage() {
   }, [selectedComponentId]);
 
   useEffect(() => {
-    if (!selectedComponentId) return;
-
-    // Send via BroadcastChannel (works for all tabs/windows)
-    sendMessage("setProps", { componentId: selectedComponentId, props });
-
-    // Also send via postMessage for iframe compatibility (fallback)
-    if (iframeLoaded) {
-      const targetWindow = iframeRef.current?.contentWindow;
-      if (targetWindow) {
-        targetWindow.postMessage(
-          {
-            type: "setProps",
-            payload: { componentId: selectedComponentId, props },
-          },
-          clientOrigin
-        );
-      }
-    }
-  }, [props, iframeLoaded, selectedComponentId, clientOrigin, sendMessage]);
-
-  useEffect(() => {
-    // Send via BroadcastChannel (works for all tabs/windows)
-    sendMessage("setTokens", tokens);
-
-    // Also send via postMessage for iframe compatibility (fallback)
-    if (iframeLoaded) {
-      const targetWindow = iframeRef.current?.contentWindow;
-      if (targetWindow) {
-        targetWindow.postMessage(
-          { type: "setTokens", payload: tokens },
-          clientOrigin
-        );
-      }
-    }
-  }, [tokens, iframeLoaded, clientOrigin, sendMessage]);
+    if (!iframeLoaded || !selectedComponentId) return;
+    const targetWindow = iframeRef.current?.contentWindow;
+    if (!targetWindow) return;
+    targetWindow.postMessage(
+      {
+        type: "setProps",
+        payload: { componentId: selectedComponentId, props },
+      },
+      clientOrigin
+    );
+  }, [props, iframeLoaded, selectedComponentId, clientOrigin]);
 
   useEffect(() => {
     if (!iframeLoaded) return;
-
-    // Send via BroadcastChannel (works for all tabs/windows)
-    sendMessage("setWcDev", { enabled: true });
-
-    // Also send via postMessage for iframe compatibility (fallback)
     const targetWindow = iframeRef.current?.contentWindow;
-    if (targetWindow) {
-      targetWindow.postMessage(
-        { type: "setWcDev", payload: { enabled: true } },
-        clientOrigin
-      );
-    }
-  }, [iframeLoaded, clientOrigin, sendMessage]);
+    if (!targetWindow) return;
+    targetWindow.postMessage(
+      { type: "setTokens", payload: tokens },
+      clientOrigin
+    );
+  }, [tokens, iframeLoaded, clientOrigin]);
+
+  useEffect(() => {
+    if (!iframeLoaded) return;
+    const targetWindow = iframeRef.current?.contentWindow;
+    if (!targetWindow) return;
+    targetWindow.postMessage(
+      { type: "setWcDev", payload: { enabled: true } },
+      clientOrigin
+    );
+  }, [iframeLoaded, clientOrigin]);
+
+  // Send config to iframe when it changes
+  useEffect(() => {
+    if (
+      !iframeLoaded ||
+      !selectedComponentId ||
+      Object.keys(componentConfig).length === 0
+    )
+      return;
+    const targetWindow = iframeRef.current?.contentWindow;
+    if (!targetWindow) return;
+    targetWindow.postMessage(
+      {
+        type: "setConfig",
+        payload: { componentId: selectedComponentId, config: componentConfig },
+      },
+      clientOrigin
+    );
+  }, [componentConfig, iframeLoaded, selectedComponentId, clientOrigin]);
+
+  // Listen for config changes from iframe (from dev inspector)
+  useEffect(() => {
+    if (!iframeLoaded) return;
+
+    const handleConfigChange = (event: MessageEvent) => {
+      if (event.origin !== clientOrigin) return;
+      const data = event.data || {};
+      if (data.type === "configChanged") {
+        const { componentId, config } = data.payload || {};
+        if (componentId === selectedComponentId && config) {
+          setComponentConfig(config);
+        }
+      }
+    };
+
+    window.addEventListener("message", handleConfigChange);
+    return () => window.removeEventListener("message", handleConfigChange);
+  }, [iframeLoaded, selectedComponentId, clientOrigin]);
 
   const handleTokensChange = (newTokens: Record<string, any>) => {
     setTokens(newTokens);
