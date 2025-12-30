@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/refs */
 "use client";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
@@ -24,7 +25,7 @@ export default function ComponentEditorPage() {
   const [tokens, setTokens] = useState<Record<string, any>>({});
   const [props, setProps] = useState<Record<string, any>>({});
   const [hasChanges, setHasChanges] = useState(false);
-  const [iframeLoaded, setIframeLoaded] = useState(false);
+  // const [iframeLoaded, setIframeLoaded] = useState(false);
 
   useEffect(() => {
     getComponentById(componentId, true)

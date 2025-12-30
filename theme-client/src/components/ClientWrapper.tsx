@@ -3,8 +3,11 @@
 
 import { ReactNode, useEffect } from "react";
 import { initWCGlobals } from "@/wc/wc-globals";
+import { useClientBroadcast } from "@/src/lib/broadcastChannel";
 
 export function ClientWrapper({ children }: { children: ReactNode }) {
+  const { subscribe } = useClientBroadcast();
+
   useEffect(() => {
     initWCGlobals();
   }, []);
@@ -77,10 +80,8 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
       );
     };
 
-    const handleMessage = (event: MessageEvent) => {
-      if (!isAllowedOrigin(event.origin)) return;
-      const data = event.data || {};
-
+    // Handler function for processing admin messages
+    const processAdminMessage = (data: any) => {
       if (data.type === "setWcDev") {
         const enabled = data.payload?.enabled ?? data.payload ?? true;
         (window as any).__CTI_WC_DEV__ = Boolean(enabled);
@@ -122,6 +123,18 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
       }
     };
 
+    // Listen to BroadcastChannel (works even without iframe)
+    const unsubscribeBroadcast = subscribe("*", (messageData: any) => {
+      processAdminMessage(messageData);
+    });
+
+    // Also listen to postMessage for iframe compatibility (fallback)
+    const handleMessage = (event: MessageEvent) => {
+      if (!isAllowedOrigin(event.origin)) return;
+      const data = event.data || {};
+      processAdminMessage(data);
+    };
+
     const styleEl = document.createElement("style");
     styleEl.setAttribute("data-admin-preview", "1");
     styleEl.textContent =
@@ -134,9 +147,10 @@ export function ClientWrapper({ children }: { children: ReactNode }) {
     return () => {
       document.removeEventListener("click", handleClick, true);
       window.removeEventListener("message", handleMessage);
+      unsubscribeBroadcast();
       styleEl.remove();
     };
-  }, []);
+  }, [subscribe]);
 
   return children;
 }

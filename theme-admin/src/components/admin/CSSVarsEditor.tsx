@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import { ComponentRegistry } from "@/src/lib/manifestClient";
+import { useAdminBroadcast } from "@/src/lib/broadcastChannel";
 
 interface CSSVarsEditorProps {
   component: ComponentRegistry;
@@ -22,6 +23,7 @@ export default function CSSVarsEditor({
     text: string;
   } | null>(null);
 
+  const { sendMessage } = useAdminBroadcast();
   const cdnUrl = process.env.NEXT_PUBLIC_CDN_URL || "http://localhost:4000";
 
   // Load current overrides on mount
@@ -45,10 +47,28 @@ export default function CSSVarsEditor({
   }, [component.id, cdnUrl]);
 
   const handleVarChange = (varName: string, value: string) => {
-    setCssVars((prev) => ({
-      ...prev,
+    const newCssVars = {
+      ...cssVars,
       [varName]: value,
-    }));
+    };
+    setCssVars(newCssVars);
+
+    // Send live updates via BroadcastChannel (real-time preview)
+    sendMessage("setCssVars", {
+      componentId: component.id,
+      cssVars: newCssVars,
+    });
+
+    // Also send via postMessage for iframe compatibility (fallback)
+    if (iframeWindow) {
+      iframeWindow.postMessage(
+        {
+          type: "setCssVars",
+          payload: { componentId: component.id, cssVars: newCssVars },
+        },
+        "*"
+      );
+    }
   };
 
   const handleReset = async () => {
@@ -70,7 +90,10 @@ export default function CSSVarsEditor({
       setCssVars({});
       setMessage({ type: "success", text: "✅ Overrides cleared" });
 
-      // Notify iframe to refresh
+      // Send via BroadcastChannel (works for all tabs/windows)
+      sendMessage("setCssVars", { componentId: component.id, cssVars: {} });
+
+      // Also send via postMessage for iframe compatibility (fallback)
       if (iframeWindow) {
         iframeWindow.postMessage(
           {
@@ -108,7 +131,10 @@ export default function CSSVarsEditor({
 
       setMessage({ type: "success", text: "✅ CSS variables saved" });
 
-      // Notify iframe to update CSS vars without refresh
+      // Send via BroadcastChannel (works for all tabs/windows)
+      sendMessage("setCssVars", { componentId: component.id, cssVars });
+
+      // Also send via postMessage for iframe compatibility (fallback)
       if (iframeWindow) {
         iframeWindow.postMessage(
           {
@@ -173,9 +199,10 @@ export default function CSSVarsEditor({
 
       <div className="space-y-3 max-h-96 overflow-y-auto">
         {componentCssVars.map((cssVar) => {
-          const varName = cssVar.name || cssVar;
+          const varName = typeof cssVar === "string" ? cssVar : cssVar.name;
           const varValue = cssVars[varName] || "";
-          const varDesc = cssVar.description || "";
+          const varDesc =
+            typeof cssVar === "string" ? "" : cssVar.description || "";
 
           return (
             <div
